@@ -1,0 +1,5 @@
+package mm.buddha.buddha_audio
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()
