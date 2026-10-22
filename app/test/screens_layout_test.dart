@@ -1,3 +1,4 @@
+import 'package:buddha_audio/l10n/generated/app_localizations.dart';
 import 'package:buddha_audio/src/core/config/app_config.dart';
 import 'package:buddha_audio/src/data/catalog_providers.dart';
 import 'package:buddha_audio/src/data/models/catalog_models.dart';
@@ -37,12 +38,12 @@ const _relatedAudio = Audio(
 class _FakeCatalogRepository implements CatalogRepository {
   @override
   Future<HomeData> getHome() async => const HomeData(
-        featured: [_audio],
-        latest: [_audio],
-        teachers: [_teacher],
-        categories: [AudioCategory(id: 'c-1', slug: 'dhamma', name: 'တရားတော်')],
-        types: [AudioType(id: 'ty-1', slug: 'talk', name: 'တရားနာ')],
-      );
+    featured: [_audio],
+    latest: [_audio],
+    teachers: [_teacher],
+    categories: [AudioCategory(id: 'c-1', slug: 'dhamma', name: 'တရားတော်')],
+    types: [AudioType(id: 'ty-1', slug: 'talk', name: 'တရားနာ')],
+  );
 
   @override
   Future<PaginatedList<Audio>> getAudios({
@@ -52,11 +53,10 @@ class _FakeCatalogRepository implements CatalogRepository {
     String? type,
     String? cursor,
     int limit = 20,
-  }) async =>
-      const PaginatedList(
-        items: [_audio, _relatedAudio],
-        pagination: Pagination(total: 2),
-      );
+  }) async => const PaginatedList(
+    items: [_audio, _relatedAudio],
+    pagination: Pagination(total: 2),
+  );
 
   @override
   Future<Audio> getAudio(String slug) async => _audio;
@@ -69,13 +69,13 @@ class _FakeCatalogRepository implements CatalogRepository {
 
   @override
   Future<List<AudioCategory>> getCategories() async => const [
-        AudioCategory(id: 'c-1', slug: 'dhamma', name: 'တရားတော်'),
-      ];
+    AudioCategory(id: 'c-1', slug: 'dhamma', name: 'တရားတော်'),
+  ];
 
   @override
   Future<List<AudioType>> getAudioTypes() async => const [
-        AudioType(id: 'ty-1', slug: 'talk', name: 'တရားနာ'),
-      ];
+    AudioType(id: 'ty-1', slug: 'talk', name: 'တရားနာ'),
+  ];
 
   @override
   Future<String> getPlaybackUrl(Audio audio) async =>
@@ -85,11 +85,11 @@ class _FakeCatalogRepository implements CatalogRepository {
 class _FakePlayerController extends PlayerController {
   @override
   PlayerUiState build() => const PlayerUiState(
-        queue: [_audio],
-        current: _audio,
-        playing: true,
-        duration: Duration(seconds: 372),
-      );
+    queue: [_audio],
+    current: _audio,
+    playing: true,
+    duration: Duration(seconds: 372),
+  );
 }
 
 void main() {
@@ -113,7 +113,12 @@ void main() {
           catalogRepositoryProvider.overrideWithValue(_FakeCatalogRepository()),
           playerControllerProvider.overrideWith(_FakePlayerController.new),
         ],
-        child: MaterialApp(home: screen),
+        child: MaterialApp(
+          locale: const Locale('my'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: screen,
+        ),
       ),
     );
     await tester.pumpAndSettle();

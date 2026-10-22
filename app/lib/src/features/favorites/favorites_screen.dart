@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../player/player_controller.dart';
 import '../widgets/audio_list_tile.dart';
 import '../widgets/state_views.dart';
@@ -12,16 +13,17 @@ class FavoritesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(favoriteAudiosProvider);
     final slugs = ref.watch(favoritesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ကြိုက်နှစ်သက်သော')),
+      appBar: AppBar(title: Text(l10n.libraryFavoritesTab)),
       body: slugs.isEmpty
-          ? const EmptyView(
+          ? EmptyView(
               icon: Icons.favorite_border_rounded,
-              title: 'ကြိုက်နှစ်သက်သော မရှိသေးပါ',
-              subtitle: 'နှစ်သက်သော တရားတော်များကို နှလုံးသွင်း သိမ်းဆည်းနိုင်ပါသည်။',
+              title: l10n.favoritesEmptyTitle,
+              subtitle: l10n.favoritesEmptySubtitle,
             )
           : async.when(
               loading: () => const LoadingView(),
@@ -31,10 +33,10 @@ class FavoritesScreen extends ConsumerWidget {
               ),
               data: (audios) {
                 if (audios.isEmpty) {
-                  return const EmptyView(
+                  return EmptyView(
                     icon: Icons.favorite_border_rounded,
-                    title: 'ဖိုင်များ ရှာမတွေ့ပါ',
-                    subtitle: 'ခဏစောင့်ပြီး ထပ်ကြည့်ပါ။',
+                    title: l10n.filesNotFoundTitle,
+                    subtitle: l10n.filesNotFoundSubtitle,
                   );
                 }
                 return ListView.builder(

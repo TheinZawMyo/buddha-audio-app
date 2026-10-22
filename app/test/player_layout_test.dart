@@ -1,3 +1,4 @@
+import 'package:buddha_audio/l10n/generated/app_localizations.dart';
 import 'package:buddha_audio/src/core/config/app_config.dart';
 import 'package:buddha_audio/src/data/models/catalog_models.dart';
 import 'package:buddha_audio/src/player/player_controller.dart';
@@ -23,11 +24,11 @@ const _audio = Audio(
 class _FakePlayerController extends PlayerController {
   @override
   PlayerUiState build() => const PlayerUiState(
-        queue: [_audio],
-        current: _audio,
-        playing: true,
-        duration: Duration(seconds: 372),
-      );
+    queue: [_audio],
+    current: _audio,
+    playing: true,
+    duration: Duration(seconds: 372),
+  );
 }
 
 void main() {
@@ -39,12 +40,17 @@ void main() {
   });
 
   Widget wrap(Widget child) => ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          playerControllerProvider.overrideWith(_FakePlayerController.new),
-        ],
-        child: MaterialApp(home: child),
-      );
+    overrides: [
+      sharedPreferencesProvider.overrideWithValue(prefs),
+      playerControllerProvider.overrideWith(_FakePlayerController.new),
+    ],
+    child: MaterialApp(
+      locale: const Locale('my'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
+    ),
+  );
 
   testWidgets('full player fits on a small screen', (tester) async {
     tester.view.physicalSize = const Size(320, 480);
@@ -66,16 +72,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
 
     await tester.pumpWidget(
-      wrap(
-        const Scaffold(
-          body: Column(
-            children: [
-              Spacer(),
-              MiniPlayer(),
-            ],
-          ),
-        ),
-      ),
+      wrap(const Scaffold(body: Column(children: [Spacer(), MiniPlayer()]))),
     );
     await tester.pump();
 

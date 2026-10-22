@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/catalog_providers.dart';
 import '../../data/models/catalog_models.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../player/player_controller.dart';
 import '../browse/browse_filter.dart';
 import '../widgets/audio_list_tile.dart';
@@ -64,7 +65,7 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
     final audios = ref.watch(audiosProvider(query));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ရှာဖွေရန်')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context).browseTitle)),
       body: Column(
         children: [
           _FilterRow(
@@ -82,10 +83,10 @@ class _BrowseScreenState extends ConsumerState<BrowseScreen> {
               ),
               data: (state) {
                 if (state.items.isEmpty) {
-                  return const EmptyView(
+                  return EmptyView(
                     icon: Icons.library_music_outlined,
-                    title: 'တရားတော် မတွေ့ပါ',
-                    subtitle: 'စစ်ထုတ်မှုများကို ပြောင်းလဲကြည့်ပါ။',
+                    title: AppLocalizations.of(context).browseEmptyTitle,
+                    subtitle: AppLocalizations.of(context).browseEmptySubtitle,
                   );
                 }
                 return RefreshIndicator(
@@ -151,6 +152,7 @@ class _FilterRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     Widget dropdown<T extends Object>({
       required String label,
       required String value,
@@ -190,10 +192,12 @@ class _FilterRow extends ConsumerWidget {
                   child: Text(
                     value.isEmpty
                         ? label
-                        : nameOf(items.firstWhere(
-                            (i) => slugOf(i) == value,
-                            orElse: () => items.first,
-                          )),
+                        : nameOf(
+                            items.firstWhere(
+                              (i) => slugOf(i) == value,
+                              orElse: () => items.first,
+                            ),
+                          ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -222,16 +226,17 @@ class _FilterRow extends ConsumerWidget {
               children: [
                 const Spacer(),
                 TextButton.icon(
-                  onPressed: () => ref.read(browseFilterProvider.notifier).clear(),
+                  onPressed: () =>
+                      ref.read(browseFilterProvider.notifier).clear(),
                   icon: const Icon(Icons.filter_alt_off_outlined, size: 18),
-                  label: const Text('စစ်ထုတ်မှု ဖျက်'),
+                  label: Text(l10n.filterClear),
                 ),
               ],
             ),
           Row(
             children: [
               dropdown(
-                label: 'အမျိုးအစား',
+                label: l10n.filterCategory,
                 value: filter.category,
                 items: categories,
                 nameOf: (c) => c.name,
@@ -241,7 +246,7 @@ class _FilterRow extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               dropdown(
-                label: 'အမျိုးအစား(type)',
+                label: l10n.filterType,
                 value: filter.type,
                 items: types,
                 nameOf: (t) => t.name,
@@ -251,7 +256,7 @@ class _FilterRow extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               dropdown(
-                label: 'ဆရာတော်',
+                label: l10n.filterTeacher,
                 value: filter.teacher,
                 items: teachers,
                 nameOf: (t) => t.shortName ?? t.name,

@@ -7,6 +7,7 @@ import '../../core/theme/app_theme.dart';
 import '../../features/detail/audio_detail_screen.dart';
 import '../../features/favorites/favorites_controller.dart';
 import '../../features/widgets/media_widgets.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../player_controller.dart';
 import 'seek_bar.dart';
 import 'sheets.dart';
@@ -15,14 +16,15 @@ class FullPlayerPage extends ConsumerWidget {
   const FullPlayerPage({super.key});
 
   static Future<void> open(BuildContext context) => Navigator.of(context).push(
-        MaterialPageRoute(
-          fullscreenDialog: true,
-          builder: (_) => const FullPlayerPage(),
-        ),
-      );
+    MaterialPageRoute(
+      fullscreenDialog: true,
+      builder: (_) => const FullPlayerPage(),
+    ),
+  );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final player = ref.watch(playerControllerProvider);
     final audio = player.current;
     if (audio == null) {
@@ -40,17 +42,22 @@ class FullPlayerPage extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.playerBackgroundTop, AppColors.playerBackgroundBottom],
+            colors: [
+              AppColors.playerBackgroundTop,
+              AppColors.playerBackgroundBottom,
+            ],
             stops: [0.0, 0.55],
           ),
         ),
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final artSize = math.min(
-                (constraints.maxWidth - 96).clamp(160.0, 320.0),
-                math.max(140.0, constraints.maxHeight * 0.38),
-              ).toDouble();
+              final artSize = math
+                  .min(
+                    (constraints.maxWidth - 96).clamp(160.0, 320.0),
+                    math.max(140.0, constraints.maxHeight * 0.38),
+                  )
+                  .toDouble();
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -74,11 +81,11 @@ class FullPlayerPage extends ConsumerWidget {
                                 size: 32,
                               ),
                             ),
-                            const Expanded(
+                            Expanded(
                               child: Text(
-                                'နားထောင်နေသည်',
+                                l10n.playerNowPlaying,
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: AppColors.playerMuted,
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -132,7 +139,8 @@ class FullPlayerPage extends ConsumerWidget {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         audio.title,
@@ -178,9 +186,11 @@ class FullPlayerPage extends ConsumerWidget {
                           const SizedBox(height: 8),
                           PlayerSeekBar(
                             position: player.position,
-                            duration: player.duration ??
+                            duration:
+                                player.duration ??
                                 Duration(seconds: audio.durationSeconds),
-                            enabled: player.duration != null &&
+                            enabled:
+                                player.duration != null &&
                                 player.duration! > Duration.zero,
                             onSeek: controller.seek,
                           ),
@@ -188,7 +198,7 @@ class FullPlayerPage extends ConsumerWidget {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(20, 4, 20, 0),
                               child: Text(
-                                player.errorMessage!,
+                                _localizedError(l10n, player.errorMessage!),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.center,
@@ -213,7 +223,8 @@ class FullPlayerPage extends ConsumerWidget {
                                       player.repeatMode == PlayerRepeatMode.one
                                           ? Icons.repeat_one_rounded
                                           : Icons.repeat_rounded,
-                                      color: player.repeatMode ==
+                                      color:
+                                          player.repeatMode ==
                                               PlayerRepeatMode.off
                                           ? AppColors.playerMuted
                                           : AppColors.playerText,
@@ -274,8 +285,7 @@ class FullPlayerPage extends ConsumerWidget {
                                 Expanded(
                                   child: IconButton(
                                     padding: EdgeInsets.zero,
-                                    onPressed: () =>
-                                        showModalBottomSheet<void>(
+                                    onPressed: () => showModalBottomSheet<void>(
                                       context: context,
                                       builder: (_) => const SpeedSheet(),
                                     ),
@@ -301,7 +311,7 @@ class FullPlayerPage extends ConsumerWidget {
                                 Expanded(
                                   child: _SecondaryAction(
                                     icon: Icons.replay_10_rounded,
-                                    label: '၁၀ စက္ကန့် နောက်',
+                                    label: l10n.playerRewind10,
                                     onTap: () => controller.skipBy(
                                       const Duration(seconds: -10),
                                     ),
@@ -310,9 +320,10 @@ class FullPlayerPage extends ConsumerWidget {
                                 Expanded(
                                   child: _SecondaryAction(
                                     icon: Icons.queue_music_rounded,
-                                    label: 'စာရင်း (${player.queue.length})',
-                                    onTap: () =>
-                                        showModalBottomSheet<void>(
+                                    label: l10n.playerQueue(
+                                      player.queue.length,
+                                    ),
+                                    onTap: () => showModalBottomSheet<void>(
                                       context: context,
                                       builder: (_) => const QueueSheet(),
                                     ),
@@ -321,9 +332,11 @@ class FullPlayerPage extends ConsumerWidget {
                                 Expanded(
                                   child: _SecondaryAction(
                                     icon: Icons.info_outline_rounded,
-                                    label: 'အသေးစိတ်',
-                                    onTap: () =>
-                                        AudioDetailScreen.open(context, audio.slug),
+                                    label: l10n.playerDetails,
+                                    onTap: () => AudioDetailScreen.open(
+                                      context,
+                                      audio.slug,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -342,6 +355,13 @@ class FullPlayerPage extends ConsumerWidget {
     );
   }
 }
+
+String _localizedError(AppLocalizations l10n, String key) => switch (key) {
+  'network' => l10n.playerErrorNetwork,
+  'source' => l10n.playerErrorSource,
+  'generic' => l10n.playerErrorGeneric,
+  _ => key,
+};
 
 class _SecondaryAction extends StatelessWidget {
   const _SecondaryAction({

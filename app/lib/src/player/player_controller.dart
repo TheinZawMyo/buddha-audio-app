@@ -277,12 +277,12 @@ class PlayerController extends Notifier<PlayerUiState> {
 
   String _friendlyMessage(String raw) {
     if (raw.contains('SocketException') || raw.contains('HttpException')) {
-      return 'ကွန်ရက် ချိတ်ဆက်မှု အားနည်းနေပါသည်။';
+      return 'network';
     }
     if (raw.contains('Source error') || raw.contains('URI')) {
-      return 'အသံဖိုင် ဖွင့်၍ မရပါ။';
+      return 'source';
     }
-    return 'အသံဖွင့်ရာတွင် အမှားဖြစ်ပွားပါသည်။';
+    return 'generic';
   }
 }
 

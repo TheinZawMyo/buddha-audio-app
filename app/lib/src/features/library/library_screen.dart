@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:background_downloader/background_downloader.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../data/catalog_providers.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../player/audio_library.dart';
 import '../../player/player_controller.dart';
 import '../favorites/favorites_controller.dart';
@@ -13,18 +16,22 @@ class LibraryScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('သိမ်းဆည်းထားသည်'),
-          bottom: const TabBar(
+          title: Text(l10n.libraryTitle),
+          bottom: TabBar(
             tabs: [
               Tab(
-                icon: Icon(Icons.favorite_outline_rounded),
-                text: 'ကြိုက်နှစ်သက်',
+                icon: const Icon(Icons.favorite_outline_rounded),
+                text: l10n.libraryFavoritesTab,
               ),
-              Tab(icon: Icon(Icons.download_outlined), text: 'ဒေါင်းလုဒ်'),
+              Tab(
+                icon: const Icon(Icons.download_outlined),
+                text: l10n.libraryDownloadsTab,
+              ),
             ],
           ),
         ),
@@ -39,13 +46,14 @@ class _FavoritesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(favoriteAudiosProvider);
     final slugs = ref.watch(favoritesProvider);
     if (slugs.isEmpty) {
-      return const EmptyView(
+      return EmptyView(
         icon: Icons.favorite_border_rounded,
-        title: 'ကြိုက်နှစ်သက်သော မရှိသေးပါ',
-        subtitle: 'နှစ်သက်သော တရားတော်များကို နှလုံးသွင်း သိမ်းဆည်းနိုင်ပါသည်။',
+        title: l10n.favoritesEmptyTitle,
+        subtitle: l10n.favoritesEmptySubtitle,
       );
     }
     return async.when(
@@ -55,10 +63,10 @@ class _FavoritesTab extends ConsumerWidget {
         onRetry: () => ref.invalidate(favoriteAudiosProvider),
       ),
       data: (audios) => audios.isEmpty
-          ? const EmptyView(
+          ? EmptyView(
               icon: Icons.favorite_border_rounded,
-              title: 'ဖိုင်များ ရှာမတွေ့ပါ',
-              subtitle: 'ခဏစောင့်ပြီး ထပ်ကြည့်ပါ။',
+              title: l10n.filesNotFoundTitle,
+              subtitle: l10n.filesNotFoundSubtitle,
             )
           : ListView.builder(
               itemCount: audios.length,
@@ -85,43 +93,171 @@ class _DownloadsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(offlineAudiosProvider);
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, _) =>
-          const Center(child: Text('သိမ်းထားသော အသံများကို ဖတ်မရပါ')),
-      data: (audios) => audios.isEmpty
-          ? const Center(
+      error: (_, _) => Center(child: Text(l10n.downloadsReadError)),
+      data: (audios) => ValueListenableBuilder<List<AudioDownloadEntry>>(
+        valueListenable: ref.watch(audioLibraryProvider).downloadsNotifier,
+        builder: (context, downloads, _) {
+          if (downloads.isEmpty && audios.isEmpty) {
+            return Center(
               child: Padding(
-                padding: EdgeInsets.all(28),
+                padding: const EdgeInsets.all(28),
                 child: Text(
-                  'ဒေါင်းလုဒ်ထားသော အသံ မရှိသေးပါ။\nအသံအသေးစိတ်စာမျက်နှာမှ ဒေါင်းလုဒ်လုပ်နိုင်ပါသည်။',
+                  l10n.downloadsEmpty,
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppColors.mutedText),
+                  style: const TextStyle(color: AppColors.mutedText),
                 ),
               ),
-            )
-          : ListView.builder(
-              itemCount: audios.length,
-              itemBuilder: (context, index) {
-                final audio = audios[index];
-                return AudioListTile(
+            );
+          }
+          return ListView(
+            children: [
+              if (downloads.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                  child: Text(
+                    l10n.downloadsInProgress,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              for (final entry in downloads)
+                _DownloadProgressTile(entry: entry),
+              if (audios.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+                  child: Text(
+                    l10n.downloadsCompleted,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              for (final (index, audio) in audios.indexed)
+                AudioListTile(
                   audio: audio,
                   onTap: () => ref
                       .read(playerControllerProvider.notifier)
                       .playAudioList(audios, startIndex: index),
                   trailing: IconButton(
-                    tooltip: 'ဖျက်ရန်',
+                    tooltip: l10n.deleteTooltip,
                     icon: const Icon(Icons.delete_outline_rounded),
                     onPressed: () async {
                       await ref.read(audioLibraryProvider).delete(audio);
-                      ref.invalidate(offlineAudiosProvider);
                       ref.invalidate(audioDownloadedProvider(audio));
                     },
                   ),
-                );
-              },
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DownloadProgressTile extends ConsumerWidget {
+  const _DownloadProgressTile({required this.entry});
+
+  final AudioDownloadEntry entry;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final audio = entry.audio;
+    final library = ref.read(audioLibraryProvider);
+    final progress = entry.progress;
+    final isPaused = entry.status == TaskStatus.paused;
+    final hasFailed =
+        entry.status == TaskStatus.failed ||
+        entry.status == TaskStatus.notFound;
+    final status = hasFailed
+        ? l10n.downloadFailedStatus
+        : isPaused
+        ? l10n.downloadPausedStatus
+        : l10n.downloadInProgressStatus;
+
+    return Card(
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 2),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 10, 8, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        audio.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        status,
+                        style: const TextStyle(
+                          color: AppColors.mutedText,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (hasFailed)
+                  IconButton(
+                    tooltip: l10n.retryTooltip,
+                    onPressed: () async {
+                      try {
+                        final url = await ref
+                            .read(catalogRepositoryProvider)
+                            .getPlaybackUrl(audio);
+                        await library.retryDownload(audio, url);
+                      } catch (_) {}
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                  )
+                else
+                  IconButton(
+                    tooltip: isPaused ? l10n.resumeTooltip : l10n.pauseTooltip,
+                    onPressed: () => isPaused
+                        ? library.resumeDownload(audio)
+                        : library.pauseDownload(audio),
+                    icon: Icon(
+                      isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                    ),
+                  ),
+                IconButton(
+                  tooltip: l10n.cancelTooltip,
+                  onPressed: () => library.cancelDownload(audio),
+                  icon: const Icon(Icons.close_rounded),
+                ),
+              ],
             ),
+            const SizedBox(height: 4),
+            LinearProgressIndicator(value: progress, minHeight: 4),
+            const SizedBox(height: 5),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                progress == null ? '…' : '${(progress * 100).floor()}%',
+                style: const TextStyle(
+                  color: AppColors.mutedText,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

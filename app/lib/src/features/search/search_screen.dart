@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/config/app_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/catalog_providers.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../player/player_controller.dart';
 import '../widgets/audio_list_tile.dart';
 import '../widgets/state_views.dart';
@@ -17,8 +18,9 @@ class _SearchQueryNotifier extends Notifier<String> {
   void set(String value) => state = value;
 }
 
-final _searchQueryProvider =
-    NotifierProvider<_SearchQueryNotifier, String>(_SearchQueryNotifier.new);
+final _searchQueryProvider = NotifierProvider<_SearchQueryNotifier, String>(
+  _SearchQueryNotifier.new,
+);
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -37,7 +39,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _recent = ref.read(sharedPreferencesProvider).getStringList(_recentKey) ?? [];
+    _recent =
+        ref.read(sharedPreferencesProvider).getStringList(_recentKey) ?? [];
   }
 
   @override
@@ -67,11 +70,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final query = ref.watch(_searchQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ရှာဖွေရန်'),
+        title: Text(l10n.searchTitle),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(72),
           child: Padding(
@@ -82,8 +86,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               onChanged: _onChanged,
               onSubmitted: _submit,
               decoration: InputDecoration(
-                hintText: 'ခေါင်းစဉ်၊ ဆရာတော် ရှာရန်...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.mutedText),
+                hintText: l10n.searchHint,
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.mutedText,
+                ),
                 suffixIcon: _controller.text.isEmpty
                     ? null
                     : IconButton(
@@ -130,11 +137,12 @@ class _RecentSearches extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     if (recent.isEmpty) {
-      return const EmptyView(
+      return EmptyView(
         icon: Icons.search_rounded,
-        title: 'တရားတော် ရှာဖွေပါ',
-        subtitle: 'ခေါင်းစဉ် သို့မဟုတ် ဆရာတော်အမည်ဖြင့် ရှာနိုင်ပါသည်။',
+        title: l10n.searchEmptyTitle,
+        subtitle: l10n.searchEmptySubtitle,
       );
     }
     return ListView(
@@ -142,13 +150,16 @@ class _RecentSearches extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Text(
-                'မကြာသေးမီက ရှာဖွေမှုများ',
-                style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
+                l10n.searchRecent,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 15,
+                ),
               ),
             ),
-            TextButton(onPressed: onClear, child: const Text('ဖျက်')),
+            TextButton(onPressed: onClear, child: Text(l10n.searchClear)),
           ],
         ),
         const SizedBox(height: 4),
@@ -176,6 +187,7 @@ class _SearchResults extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final audiosQuery = AudiosQuery(query: query);
     final async = ref.watch(audiosProvider(audiosQuery));
 
@@ -187,10 +199,10 @@ class _SearchResults extends ConsumerWidget {
       ),
       data: (state) {
         if (state.items.isEmpty) {
-          return const EmptyView(
+          return EmptyView(
             icon: Icons.search_off_rounded,
-            title: 'တွေ့မတွေ့ပါ',
-            subtitle: 'အခြားစကားလုံးဖြင့် ထပ်ရှာကြည့်ပါ။',
+            title: l10n.searchNoResultsTitle,
+            subtitle: l10n.searchNoResultsSubtitle,
           );
         }
         return ListView.builder(

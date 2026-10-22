@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/duration_format.dart';
 import '../../data/models/catalog_models.dart';
 import '../../features/widgets/media_widgets.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../player_controller.dart';
 
 class SpeedSheet extends ConsumerWidget {
@@ -14,6 +15,7 @@ class SpeedSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final current = ref.watch(playerControllerProvider.select((s) => s.speed));
 
     return SafeArea(
@@ -23,9 +25,9 @@ class SpeedSheet extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'ဖွင့်နှုန်း',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            Text(
+              l10n.playerSpeedTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             for (final speed in speeds)
@@ -35,9 +37,12 @@ class SpeedSheet extends ConsumerWidget {
                 title: Text(
                   '${speed}x',
                   style: TextStyle(
-                    fontWeight:
-                        speed == current ? FontWeight.w800 : FontWeight.w500,
-                    color: speed == current ? AppColors.primary : AppColors.text,
+                    fontWeight: speed == current
+                        ? FontWeight.w800
+                        : FontWeight.w500,
+                    color: speed == current
+                        ? AppColors.primary
+                        : AppColors.text,
                   ),
                 ),
                 trailing: speed == current
@@ -60,6 +65,7 @@ class QueueSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final player = ref.watch(playerControllerProvider);
     final current = player.current;
     final queue = player.queue;
@@ -72,26 +78,28 @@ class QueueSheet extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
-                      'နားထောင်စာရင်း',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                      l10n.playerQueueTitle,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             if (queue.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(28),
+              Padding(
+                padding: const EdgeInsets.all(28),
                 child: Text(
-                  'စာရင်း မရှိသေးပါ',
-                  style: TextStyle(color: AppColors.mutedText),
+                  l10n.playerQueueEmpty,
+                  style: const TextStyle(color: AppColors.mutedText),
                 ),
               )
             else
@@ -105,16 +113,18 @@ class QueueSheet extends ConsumerWidget {
                     return ListTile(
                       selected: isCurrent,
                       selectedColor: AppColors.text,
-                      tileColor:
-                          isCurrent ? AppColors.primaryContainer.withValues(alpha: .4) : null,
+                      tileColor: isCurrent
+                          ? AppColors.primaryContainer.withValues(alpha: .4)
+                          : null,
                       leading: CoverThumb(audio: audio),
                       title: Text(
                         audio.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontWeight:
-                              isCurrent ? FontWeight.w800 : FontWeight.w600,
+                          fontWeight: isCurrent
+                              ? FontWeight.w800
+                              : FontWeight.w600,
                           fontSize: 14,
                         ),
                       ),
@@ -126,7 +136,10 @@ class QueueSheet extends ConsumerWidget {
                         ),
                       ),
                       trailing: isCurrent
-                          ? const Icon(Icons.graphic_eq, color: AppColors.primary)
+                          ? const Icon(
+                              Icons.graphic_eq,
+                              color: AppColors.primary,
+                            )
                           : null,
                       onTap: () {
                         ref

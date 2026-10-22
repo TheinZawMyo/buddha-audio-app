@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../player/widgets/mini_player.dart';
 import '../browse/browse_screen.dart';
 import '../library/library_screen.dart';
@@ -18,6 +19,7 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final index = ref.watch(shellProvider);
+    final l10n = AppLocalizations.of(context);
 
     return Scaffold(
       body: IndexedStack(
@@ -43,26 +45,26 @@ class AppShell extends ConsumerWidget {
               selectedIndex: index,
               onDestinationSelected: (value) =>
                   ref.read(shellProvider.notifier).goTo(value),
-              destinations: const [
+              destinations: [
                 NavigationDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home_rounded),
-                  label: 'ပင်မ',
+                  icon: const Icon(Icons.home_outlined),
+                  selectedIcon: const Icon(Icons.home_rounded),
+                  label: l10n.navHome,
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.explore_outlined),
-                  selectedIcon: Icon(Icons.explore_rounded),
-                  label: 'ရှာဖွေ',
+                  icon: const Icon(Icons.explore_outlined),
+                  selectedIcon: const Icon(Icons.explore_rounded),
+                  label: l10n.navBrowse,
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.search_rounded),
-                  selectedIcon: Icon(Icons.search_rounded),
-                  label: 'ရှာရန်',
+                  icon: const Icon(Icons.search_rounded),
+                  selectedIcon: const Icon(Icons.search_rounded),
+                  label: l10n.navSearch,
                 ),
                 NavigationDestination(
-                  icon: Icon(Icons.video_library_outlined),
-                  selectedIcon: Icon(Icons.video_library_rounded),
-                  label: 'သိမ်းဆည်း',
+                  icon: const Icon(Icons.video_library_outlined),
+                  selectedIcon: const Icon(Icons.video_library_rounded),
+                  label: l10n.navLibrary,
                 ),
               ],
             ),

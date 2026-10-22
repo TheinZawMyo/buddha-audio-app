@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import '../../core/utils/duration_format.dart';
 import '../../data/catalog_providers.dart';
 import '../../data/models/catalog_models.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../player/player_controller.dart';
 import '../../player/audio_library.dart';
 import '../favorites/favorites_controller.dart';
@@ -46,6 +47,7 @@ class _DetailBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final player = ref.watch(playerControllerProvider);
     final isCurrent = player.current?.id == audio.id && player.playing;
     final favorites = ref.watch(favoritesProvider);
@@ -133,7 +135,9 @@ class _DetailBody extends ConsumerWidget {
                   icon: Icon(
                     isCurrent ? Icons.graphic_eq : Icons.play_arrow_rounded,
                   ),
-                  label: Text(isCurrent ? 'ဖွင့်နေသည်' : 'နားထောင်မည်'),
+                  label: Text(
+                    isCurrent ? l10n.detailListening : l10n.detailListen,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -150,9 +154,9 @@ class _DetailBody extends ConsumerWidget {
           ),
           if (audio.description != null && audio.description!.isNotEmpty) ...[
             const SizedBox(height: 24),
-            const Text(
-              'ဖော်ပြချက်',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+            Text(
+              l10n.detailDescription,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 8),
             Text(
@@ -178,6 +182,7 @@ class _OfflineAudioAction extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final downloaded = ref.watch(audioDownloadedProvider(audio));
     return downloaded.when(
       loading: () => const SizedBox(
@@ -191,8 +196,8 @@ class _OfflineAudioAction extends ConsumerWidget {
       error: (_, _) => const SizedBox.shrink(),
       data: (isDownloaded) => IconButton.outlined(
         tooltip: isDownloaded
-            ? 'အော့ဖ်လိုင်းအတွက် သိမ်းပြီး'
-            : 'ဒေါင်းလုဒ်လုပ်ရန်',
+            ? l10n.detailDownloadedTooltip
+            : l10n.detailDownloadTooltip,
         onPressed: isDownloaded
             ? null
             : () async {
@@ -200,19 +205,15 @@ class _OfflineAudioAction extends ConsumerWidget {
                 try {
                   final repository = ref.read(catalogRepositoryProvider);
                   final url = await repository.getPlaybackUrl(audio);
-                  await ref.read(audioLibraryProvider).cache(audio, url);
-                  ref.invalidate(audioDownloadedProvider(audio));
-                  ref.invalidate(offlineAudiosProvider);
+                  await ref
+                      .read(audioLibraryProvider)
+                      .startDownload(audio, url);
                   messenger.showSnackBar(
-                    const SnackBar(
-                      content: Text('အော့ဖ်လိုင်း နားထောင်ရန် သိမ်းပြီးပါပြီ'),
-                    ),
+                    SnackBar(content: Text(l10n.detailDownloadStarted)),
                   );
                 } catch (_) {
                   messenger.showSnackBar(
-                    const SnackBar(
-                      content: Text('ဒေါင်းလုဒ် မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။'),
-                    ),
+                    SnackBar(content: Text(l10n.detailDownloadFailed)),
                   );
                 }
               },
@@ -231,6 +232,7 @@ class _MoreFromTeacher extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final async = ref.watch(
       audiosProvider(AudiosQuery(teacher: current.teacher.slug)),
     );
@@ -250,7 +252,7 @@ class _MoreFromTeacher extends ConsumerWidget {
           children: [
             const SizedBox(height: 24),
             Text(
-              '${current.teacher.name}၏ အခြားတရားတော်များ',
+              l10n.detailMoreFromTeacher(current.teacher.name),
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),

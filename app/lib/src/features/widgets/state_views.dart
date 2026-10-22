@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
@@ -134,12 +135,13 @@ class AudioErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final text = message.toString();
     return MessageView(
       icon: Icons.wifi_off_rounded,
-      title: 'တစ်စုံတစ်ရာ မှားယွင်းနေပါသည်',
-      subtitle: text.contains('Exception') ? 'ကွန်ရက် ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းပါ။' : text,
-      actionLabel: 'ထပ်စမ်းမည်',
+      title: l10n.errorTitle,
+      subtitle: text.contains('Exception') ? l10n.errorNetworkSubtitle : text,
+      actionLabel: l10n.errorRetry,
       onAction: onRetry,
     );
   }
@@ -158,9 +160,6 @@ class EmptyView extends StatelessWidget {
   final String? subtitle;
 
   @override
-  Widget build(BuildContext context) => MessageView(
-        icon: icon,
-        title: title,
-        subtitle: subtitle,
-      );
+  Widget build(BuildContext context) =>
+      MessageView(icon: icon, title: title, subtitle: subtitle);
 }

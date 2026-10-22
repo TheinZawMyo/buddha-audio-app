@@ -66,6 +66,9 @@ and deployment direction (written in Burmese).
 - A single **Saved** navigation page with Favorites and Downloads tabs.
 - Playback caches audio in app-private storage while streaming. Saved tracks can
   be played offline; the detail page also offers a full download action.
+- Explicit downloads continue through native background transfer tasks when the
+  app is closed by the operating system. The Downloads tab shows percentage
+  progress and supports pause, resume, retry, and cancel.
 - Downloaded audio stays in the app's private files directory and is managed in
   the Downloads tab, rather than being added to the device's public music folder.
 
@@ -267,6 +270,9 @@ automatically cached and explicitly downloaded tracks appear under **Saved →
 Downloads**, where they can be played without a network connection or removed
 from the device. Audio files are not exported to the public music/download
 folders; clearing the app's data or uninstalling it removes the local copies.
+Explicit downloads run through the platform's background transfer system and
+their task state is restored when the app is reopened. Operating systems can
+still pause or stop work under force-quit, battery, or resource restrictions.
 
 ## Production notes
 

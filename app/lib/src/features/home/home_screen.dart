@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../data/catalog_providers.dart';
 import '../../data/models/catalog_models.dart';
 import '../../player/player_controller.dart';
@@ -33,13 +34,16 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.self_improvement,
-                  color: Colors.white, size: 22),
+              child: const Icon(
+                Icons.self_improvement,
+                color: Colors.white,
+                size: 22,
+              ),
             ),
             const SizedBox(width: 10),
-            const Expanded(
+            Expanded(
               child: Text(
-                'ဗုဒ္ဓသံသာ',
+                AppLocalizations.of(context).appTitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -54,7 +58,8 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       body: home.when(
-        loading: () => const LoadingView(message: 'တရားတော်များ ရယူနေသည်...'),
+        loading: () =>
+            LoadingView(message: AppLocalizations.of(context).homeLoading),
         error: (error, _) => AudioErrorView(
           message: error,
           onRetry: () => ref.invalidate(homeProvider),
@@ -72,22 +77,24 @@ class HomeScreen extends ConsumerWidget {
                   onTap: () => ref.read(shellProvider.notifier).openSearch(),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                      horizontal: 16,
+                      vertical: 14,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.surface,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.outline),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.search, color: AppColors.mutedText),
-                        SizedBox(width: 10),
+                        const Icon(Icons.search, color: AppColors.mutedText),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'တရားတော် ရှာမည်...',
+                            AppLocalizations.of(context).homeSearchHint,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: AppColors.mutedText),
+                            style: const TextStyle(color: AppColors.mutedText),
                           ),
                         ),
                       ],
@@ -96,7 +103,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
               if (data.featured.isNotEmpty) ...[
-                const SectionHeader(title: 'ထူးခြားသော တရားတော်များ'),
+                SectionHeader(title: AppLocalizations.of(context).homeFeatured),
                 SizedBox(
                   height: 190,
                   child: ListView.separated(
@@ -110,7 +117,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ],
               if (data.teachers.isNotEmpty) ...[
-                const SectionHeader(title: 'ဆရာတော်များ'),
+                SectionHeader(title: AppLocalizations.of(context).homeTeachers),
                 SizedBox(
                   height: 112,
                   child: ListView.separated(
@@ -138,7 +145,9 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ],
               if (data.categories.isNotEmpty) ...[
-                const SectionHeader(title: 'အမျိုးအစားများ'),
+                SectionHeader(
+                  title: AppLocalizations.of(context).homeCategories,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Wrap(
@@ -160,15 +169,18 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ],
               if (data.latest.isNotEmpty) ...[
-                const SectionHeader(title: 'အသစ်ထွက် တရားတော်များ'),
+                SectionHeader(title: AppLocalizations.of(context).homeLatest),
                 for (final audio in data.latest)
                   AudioListTile(
                     audio: audio,
                     trailing: IconButton(
                       onPressed: () {
-                        final index =
-                            data.latest.indexWhere((a) => a.id == audio.id);
-                        ref.read(playerControllerProvider.notifier).playAudioList(
+                        final index = data.latest.indexWhere(
+                          (a) => a.id == audio.id,
+                        );
+                        ref
+                            .read(playerControllerProvider.notifier)
+                            .playAudioList(
                               data.latest,
                               startIndex: index < 0 ? 0 : index,
                             );
@@ -229,8 +241,10 @@ class _FeaturedCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.white24,
                       borderRadius: BorderRadius.circular(999),
@@ -286,9 +300,15 @@ class _FeaturedCard extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Icon(Icons.schedule, color: Colors.white54, size: 16),
+                      const Icon(
+                        Icons.schedule,
+                        color: Colors.white54,
+                        size: 16,
+                      ),
                       Text(
-                        _formatMinutes(audio.durationSeconds),
+                        AppLocalizations.of(
+                          context,
+                        ).durationMinutes((audio.durationSeconds / 60).ceil()),
                         style: const TextStyle(
                           color: Colors.white54,
                           fontSize: 12,
@@ -303,10 +323,5 @@ class _FeaturedCard extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  String _formatMinutes(int seconds) {
-    final m = (seconds / 60).ceil();
-    return '$m မိနစ်';
   }
 }

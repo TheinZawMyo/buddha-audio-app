@@ -1,0 +1,102 @@
+{
+  "@@locale": "my",
+  "appTitle": "ဗုဒ္ဓသံသာ",
+  "navHome": "ပင်မ",
+  "navBrowse": "ရှာဖွေ",
+  "navSearch": "ရှာရန်",
+  "navLibrary": "သိမ်းဆည်း",
+  "homeSearchHint": "တရားတော် ရှာမည်...",
+  "homeFeatured": "ထူးခြားသော တရားတော်များ",
+  "homeTeachers": "ဆရာတော်များ",
+  "homeCategories": "အမျိုးအစားများ",
+  "homeLatest": "အသစ်ထွက် တရားတော်များ",
+  "homeLoading": "တရားတော်များ ရယူနေသည်...",
+  "durationMinutes": "{minutes} မိနစ်",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTitle": "ဆက်တင်များ",
+  "settingsAppSection": "အက်ပ်",
+  "settingsVersion": "ဗားရှင်း",
+  "settingsVersionValue": "1.0.0 MVP",
+  "settingsBackgroundPlayback": "နောက်ခံဖွင့်ခြင်း",
+  "settingsBackgroundPlaybackValue": "အမြဲဖွင့်ထားနိုင်သည်",
+  "settingsLanguage": "ဘာသာစကား",
+  "languageBurmese": "မြန်မာ",
+  "languageEnglish": "English",
+  "libraryTitle": "သိမ်းဆည်းထားသည်",
+  "libraryFavoritesTab": "ကြိုက်နှစ်သက်",
+  "libraryDownloadsTab": "ဒေါင်းလုဒ်",
+  "favoritesEmptyTitle": "ကြိုက်နှစ်သက်သော မရှိသေးပါ",
+  "favoritesEmptySubtitle": "နှစ်သက်သော တရားတော်များကို နှလုံးသွင်း သိမ်းဆည်းနိုင်ပါသည်။",
+  "filesNotFoundTitle": "ဖိုင်များ ရှာမတွေ့ပါ",
+  "filesNotFoundSubtitle": "ခဏစောင့်ပြီး ထပ်ကြည့်ပါ။",
+  "downloadsReadError": "သိမ်းထားသော အသံများကို ဖတ်မရပါ",
+  "downloadsEmpty": "ဒေါင်းလုဒ်ထားသော အသံ မရှိသေးပါ။\nအသံအသေးစိတ်စာမျက်နှာမှ ဒေါင်းလုဒ်လုပ်နိုင်ပါသည်။",
+  "downloadsInProgress": "ဒေါင်းလုဒ်လုပ်နေသည်",
+  "downloadsCompleted": "ဒေါင်းလုဒ်ပြီး",
+  "deleteTooltip": "ဖျက်ရန်",
+  "downloadFailedStatus": "မအောင်မြင်ပါ",
+  "downloadPausedStatus": "ခေတ္တရပ်ထားသည်",
+  "downloadInProgressStatus": "ဒေါင်းလုဒ်လုပ်နေသည်",
+  "retryTooltip": "ထပ်စမ်းရန်",
+  "resumeTooltip": "ဆက်လုပ်ရန်",
+  "pauseTooltip": "ခေတ္တရပ်ရန်",
+  "cancelTooltip": "ပယ်ဖျက်ရန်",
+  "browseTitle": "ရှာဖွေရန်",
+  "browseEmptyTitle": "တရားတော် မတွေ့ပါ",
+  "browseEmptySubtitle": "စစ်ထုတ်မှုများကို ပြောင်းလဲကြည့်ပါ။",
+  "filterClear": "စစ်ထုတ်မှု ဖျက်",
+  "filterCategory": "အမျိုးအစား",
+  "filterType": "အမျိုးအစား(type)",
+  "filterTeacher": "ဆရာတော်",
+  "detailListening": "ဖွင့်နေသည်",
+  "detailListen": "နားထောင်မည်",
+  "detailDescription": "ဖော်ပြချက်",
+  "detailDownloadedTooltip": "အော့ဖ်လိုင်းအတွက် သိမ်းပြီး",
+  "detailDownloadTooltip": "ဒေါင်းလုဒ်လုပ်ရန်",
+  "detailDownloadStarted": "ဒေါင်းလုဒ် စတင်ပါပြီ",
+  "detailDownloadFailed": "ဒေါင်းလုဒ် မအောင်မြင်ပါ။ ထပ်စမ်းကြည့်ပါ။",
+  "detailMoreFromTeacher": "{teacher}၏ အခြားတရားတော်များ",
+  "@detailMoreFromTeacher": {
+    "placeholders": {
+      "teacher": {
+        "type": "String"
+      }
+    }
+  },
+  "searchTitle": "ရှာဖွေရန်",
+  "searchHint": "ခေါင်းစဉ်၊ ဆရာတော် ရှာရန်...",
+  "searchRecent": "မကြာသေးမီက ရှာဖွေမှုများ",
+  "searchClear": "ဖျက်",
+  "searchEmptyTitle": "တရားတော် ရှာဖွေပါ",
+  "searchEmptySubtitle": "ခေါင်းစဉ် သို့မဟုတ် ဆရာတော်အမည်ဖြင့် ရှာနိုင်ပါသည်။",
+  "searchNoResultsTitle": "တွေ့မတွေ့ပါ",
+  "searchNoResultsSubtitle": "အခြားစကားလုံးဖြင့် ထပ်ရှာကြည့်ပါ။",
+  "errorTitle": "တစ်စုံတစ်ရာ မှားယွင်းနေပါသည်",
+  "errorNetworkSubtitle": "ကွန်ရက် ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းပါ။",
+  "errorRetry": "ထပ်စမ်းမည်",
+  "offlineTitle": "ဒေါင်းလုဒ်များ",
+  "playAllTooltip": "ဒေါင်းလုဒ်အားလုံး ဖွင့်ရန်",
+  "playerNowPlaying": "နားထောင်နေသည်",
+  "playerRewind10": "၁၀ စက္ကန့် နောက်",
+  "playerQueue": "စာရင်း ({count})",
+  "@playerQueue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "playerDetails": "အသေးစိတ်",
+  "playerSpeedTitle": "ဖွင့်နှုန်း",
+  "playerQueueTitle": "နားထောင်စာရင်း",
+  "playerQueueEmpty": "စာရင်း မရှိသေးပါ",
+  "playerErrorNetwork": "ကွန်ရက် ချိတ်ဆက်မှု အားနည်းနေပါသည်။",
+  "playerErrorSource": "အသံဖိုင် ဖွင့်၍ မရပါ။",
+  "playerErrorGeneric": "အသံဖွင့်ရာတွင် အမှားဖြစ်ပွားပါသည်။"
+}
