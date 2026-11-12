@@ -6,6 +6,7 @@ use App\Enums\AudioStatus;
 use App\Models\Audio;
 use App\Models\AudioCategory;
 use App\Models\AudioType;
+use App\Models\FeaturedAudio;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -157,6 +158,8 @@ class CatalogSeeder extends Seeder
                 ],
             ];
 
+            $created = [];
+
             foreach ($audios as $index => $item) {
                 $audio = Audio::query()->updateOrCreate(
                     ['slug' => $item['slug']],
@@ -178,6 +181,26 @@ class CatalogSeeder extends Seeder
 
                 $audio->categories()->sync(
                     collect($item['categories'])->map(fn (string $slug) => $categories[$slug]->id)->all(),
+                );
+
+                $created[$item['slug']] = $audio;
+            }
+
+            $featured = [
+                'mind-of-peace' => 1,
+                'four-noble-truths' => 2,
+                'metta-bhavana' => 3,
+                'ratanasutta' => 4,
+            ];
+
+            foreach ($featured as $slug => $sortOrder) {
+                if (! isset($created[$slug])) {
+                    continue;
+                }
+
+                FeaturedAudio::query()->updateOrCreate(
+                    ['audio_id' => $created[$slug]->id],
+                    ['sort_order' => $sortOrder, 'is_active' => true],
                 );
             }
         });

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AudioController;
 use App\Http\Controllers\Admin\AudioTypeController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\FeaturedAudioController;
 use App\Http\Controllers\Admin\PasswordController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TusUploadController;
@@ -32,6 +33,9 @@ Route::middleware(['auth', 'active'])
         Route::resource('teachers', TeacherController::class)->except('show');
         Route::resource('categories', AudioCategoryController::class)->except('show');
         Route::resource('audio-types', AudioTypeController::class)->except('show')->parameters(['audio-types' => 'audioType']);
+        Route::resource('featured-audios', FeaturedAudioController::class)
+            ->except('show')
+            ->parameters(['featured-audios' => 'featuredAudio']);
 
         Route::post('audios/{audio}/publish', [AudioController::class, 'publish'])->name('audios.publish');
         Route::post('audios/{audio}/archive', [AudioController::class, 'archive'])->name('audios.archive');

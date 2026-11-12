@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Audio;
 use App\Models\AudioCategory;
 use App\Models\AudioType;
+use App\Models\FeaturedAudio;
 use App\Models\Teacher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -48,6 +49,31 @@ class PublicCatalogTest extends TestCase
             ->assertJsonPath('data.categories.0.slug', 'active-category')
             ->assertJsonCount(1, 'data.audio_types')
             ->assertJsonPath('data.audio_types.0.slug', 'active-type');
+    }
+
+    public function test_home_uses_custom_featured_list_order_and_visibility(): void
+    {
+        $featuredFirst = Audio::factory()->published()->create([
+            'slug' => 'curated-first',
+            'published_at' => now()->subDays(10),
+        ]);
+        $featuredSecond = Audio::factory()->published()->create([
+            'slug' => 'curated-second',
+            'published_at' => now()->subDays(5),
+        ]);
+        $hidden = Audio::factory()->published()->create(['slug' => 'curated-hidden']);
+        $draft = Audio::factory()->create(['slug' => 'curated-draft']);
+
+        FeaturedAudio::factory()->create(['audio_id' => $featuredSecond->id, 'sort_order' => 2]);
+        FeaturedAudio::factory()->create(['audio_id' => $featuredFirst->id, 'sort_order' => 1]);
+        FeaturedAudio::factory()->inactive()->create(['audio_id' => $hidden->id, 'sort_order' => 0]);
+        FeaturedAudio::factory()->create(['audio_id' => $draft->id, 'sort_order' => 0]);
+
+        $this->getJson('/api/v1/home')
+            ->assertOk()
+            ->assertJsonCount(2, 'data.featured')
+            ->assertJsonPath('data.featured.0.slug', 'curated-first')
+            ->assertJsonPath('data.featured.1.slug', 'curated-second');
     }
 
     public function test_audio_list_filters_by_query_teacher_category_and_type(): void

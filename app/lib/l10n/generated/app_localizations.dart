@@ -224,6 +224,120 @@ abstract class AppLocalizations {
   /// **'English'**
   String get languageEnglish;
 
+  /// No description provided for @settingsLegalSection.
+  ///
+  /// In my, this message translates to:
+  /// **'ဥပဒေဆိုင်ရာ'**
+  String get settingsLegalSection;
+
+  /// No description provided for @settingsPrivacyPolicy.
+  ///
+  /// In my, this message translates to:
+  /// **'ကိုယ်ရေးအချက်အလက် မူဝါဒ'**
+  String get settingsPrivacyPolicy;
+
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'ကိုယ်ရေးအချက်အလက် မူဝါဒ'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @privacyPolicyLastUpdated.
+  ///
+  /// In my, this message translates to:
+  /// **'နောက်ဆုံး ပြင်ဆင်သည့်ရက် - နိုဝင်ဘာ ၂၀၂၆'**
+  String get privacyPolicyLastUpdated;
+
+  /// No description provided for @privacyIntro.
+  ///
+  /// In my, this message translates to:
+  /// **'ဤကိုယ်ရေးအချက်အလက် မူဝါဒသည် ဗုဒ္ဓသံသာ အက်ပ် (\"အက်ပ်\") မှ သင့်အချက်အလက်များကို မည်သို့ ကိုင်တွယ်သည်ကို ရှင်းလင်းဖော်ပြထားပါသည်။ အက်ပ်သည် တရားတော်များ နားထောင်ရန်နှင့် ထုတ်ဝေရန်အတွက် အသံစာရင်း အက်ပ်ဖြစ်ပါသည်။ အက်ပ်ကို အသုံးပြုခြင်းဖြင့် ဤမူဝါဒကို သဘောတူသည်ဟု မှတ်ယူပါသည်။'**
+  String get privacyIntro;
+
+  /// No description provided for @privacyDataTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'ကျွန်ုပ်တို့ စုဆောင်းသော အချက်အလက်များ'**
+  String get privacyDataTitle;
+
+  /// No description provided for @privacyDataBody.
+  ///
+  /// In my, this message translates to:
+  /// **'အက်ပ်သည် အကောင့်ဖွင့်ရန် မလိုအပ်ပါ၊ သင့်အမည်၊ အီးမေးလ်လိပ်စာ သို့မဟုတ် ဖုန်းနံပါတ်ကဲ့သို့သော ကိုယ်ရေးအချက်အလက်များကို စုဆောင်းခြင်း မရှိပါ။ ကြော်ငြာ ခွဲခြားသတ်မှတ်သည့် ကုဒ်များ၊ ခွဲခြမ်းစိတ်ဖြာမှု SDK များ သို့မဟုတ် ခြေရာခံကိရိယာများကို အသုံးမပြုပါ။'**
+  String get privacyDataBody;
+
+  /// No description provided for @privacyLocalTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'သင့်စက်ပစ္စည်းတွင် သိမ်းဆည်းသော အချက်အလက်များ'**
+  String get privacyLocalTitle;
+
+  /// No description provided for @privacyLocalBody.
+  ///
+  /// In my, this message translates to:
+  /// **'သင့်ဘာသာစကား ရွေးချယ်မှု၊ သိမ်းဆည်းထားသော ကြိုက်နှစ်သက်မှုများ၊ နားထောင်မှု တိုးတက်မှုနှင့် ဒေါင်းလုဒ်လုပ်ထားသော အသံများကို သင့်စက်ပစ္စည်းတွင်သာ သိမ်းဆည်းထားပါသည်။ ဒေါင်းလုဒ်များကို ဒေါင်းလုဒ် တဘ်မှ မည်သည့်အချိန်မဆို ဖယ်ရှားနိုင်ပြီး အက်ပ်၏ ဒေတာများကို ရှင်းလင်းပါက စက်ပစ္စည်းတွင် သိမ်းဆည်းထားသော အချက်အလက်အားလုံး ပျက်သွားပါမည်။'**
+  String get privacyLocalBody;
+
+  /// No description provided for @privacyNetworkTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'ကွန်ရက် တောင်းဆိုမှုများ'**
+  String get privacyNetworkTitle;
+
+  /// No description provided for @privacyNetworkBody.
+  ///
+  /// In my, this message translates to:
+  /// **'အက်ပ်သည် တရားတော်များ၊ မျက်နှာဖုံးပုံများနှင့် အသံ stream များကို ရယူရန် ကျွန်ုပ်တို့၏ အသံစာရင်း ဆာဗာသို့ ချိတ်ဆက်ပါသည်။ အင်တာနက် ဝန်ဆောင်မှု အများစုကဲ့သို့ပင် ဆာဗာသည် အကြောင်းအရာများ ပေးပို့ရန်နှင့် ဝန်ဆောင်မှု လုံခြုံရေးအတွက် သင့် IP လိပ်စာ၊ စက်အမျိုးအစားနှင့် တောင်းဆိုချိန် ကဲ့သို့သော သာမန် နည်းပညာဆိုင်ရာ အချက်အလက်များကို ခေတ္တ စီမံနိုင်ပါသည်။ ဤအချက်အလက်များကို သင့်ကို ကိုယ်ပိုင်အားဖြင့် ဖော်ထုတ်ရန် အသုံးမပြုပါ။'**
+  String get privacyNetworkBody;
+
+  /// No description provided for @privacySharingTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'အချက်အလက်များ မျှဝေခြင်း'**
+  String get privacySharingTitle;
+
+  /// No description provided for @privacySharingBody.
+  ///
+  /// In my, this message translates to:
+  /// **'ကျွန်ုပ်တို့သည် သင့်အချက်အလက်များကို တတိယပါတီများထံ ရောင်းချခြင်း၊ ငှားရမ်းခြင်း သို့မဟုတ် မျှဝေခြင်း မပြုပါ။ အက်ပ်တွင် တတိယပါတီ ကြော်ငြာများ သို့မဟုတ် ဆိုရှယ်မီဒီယာ ခြေရာခံခြင်း မပါဝင်ပါ။'**
+  String get privacySharingBody;
+
+  /// No description provided for @privacyChildrenTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'ကလေးများ၏ ကိုယ်ရေးအချက်အလက်'**
+  String get privacyChildrenTitle;
+
+  /// No description provided for @privacyChildrenBody.
+  ///
+  /// In my, this message translates to:
+  /// **'အက်ပ်သည် ကလေးများအပါအဝင် အများသူငှာ အသုံးပြုနိုင်ရန် သင့်လျော်ပါသည်။ ကျွန်ုပ်တို့သည် ကိုယ်ရေးအချက်အလက်များကို မစုဆောင်းသောကြောင့် ကလေးများထံမှ သိသိသာသာ အချက်အလက် စုဆောင်းခြင်း မရှိပါ။'**
+  String get privacyChildrenBody;
+
+  /// No description provided for @privacyChangesTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'မူဝါဒ ပြောင်းလဲခြင်း'**
+  String get privacyChangesTitle;
+
+  /// No description provided for @privacyChangesBody.
+  ///
+  /// In my, this message translates to:
+  /// **'ဤမူဝါဒကို အခါအားလျော်စွာ ပြင်ဆင်နိုင်ပါသည်။ မွမ်းမံထားသော မူဝါဒကို အက်ပ်တွင် ရရှိနိုင်သည့်အခါ ပြောင်းလဲမှုများ အသက်ဝင်ပါမည်။ မွမ်းမံပြီးနောက် အက်ပ်ကို ဆက်လက် အသုံးပြုခြင်းဖြင့် ပြင်ဆင်ထားသော မူဝါဒကို သဘောတူသည်ဟု မှတ်ယူပါသည်။'**
+  String get privacyChangesBody;
+
+  /// No description provided for @privacyContactTitle.
+  ///
+  /// In my, this message translates to:
+  /// **'ဆက်သွယ်ရန်'**
+  String get privacyContactTitle;
+
+  /// No description provided for @privacyContactBody.
+  ///
+  /// In my, this message translates to:
+  /// **'ဤကိုယ်ရေးအချက်အလက် မူဝါဒနှင့် ပတ်သက်၍ မေးခွန်းများ ရှိပါက အက်ပ်စတိုး စာရင်းတွင် ဖော်ပြထားသော ဆက်သွယ်ရန် အချက်အလက်များမှတစ်ဆင့် ဆက်သွယ်နိုင်ပါသည်။'**
+  String get privacyContactBody;
+
   /// No description provided for @libraryTitle.
   ///
   /// In my, this message translates to:

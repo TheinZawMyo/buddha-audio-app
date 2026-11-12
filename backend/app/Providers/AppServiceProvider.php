@@ -6,11 +6,13 @@ use App\Repositories\Contracts\AudioCategoryRepositoryInterface;
 use App\Repositories\Contracts\AudioRepositoryInterface;
 use App\Repositories\Contracts\AudioTypeRepositoryInterface;
 use App\Repositories\Contracts\AuditLogRepositoryInterface;
+use App\Repositories\Contracts\FeaturedAudioRepositoryInterface;
 use App\Repositories\Contracts\TeacherRepositoryInterface;
 use App\Repositories\Eloquent\EloquentAudioCategoryRepository;
 use App\Repositories\Eloquent\EloquentAudioRepository;
 use App\Repositories\Eloquent\EloquentAudioTypeRepository;
 use App\Repositories\Eloquent\EloquentAuditLogRepository;
+use App\Repositories\Eloquent\EloquentFeaturedAudioRepository;
 use App\Repositories\Eloquent\EloquentTeacherRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Vite;
@@ -28,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AudioTypeRepositoryInterface::class, EloquentAudioTypeRepository::class);
         $this->app->bind(AudioRepositoryInterface::class, EloquentAudioRepository::class);
         $this->app->bind(AuditLogRepositoryInterface::class, EloquentAuditLogRepository::class);
+        $this->app->bind(FeaturedAudioRepositoryInterface::class, EloquentFeaturedAudioRepository::class);
     }
 
     /**

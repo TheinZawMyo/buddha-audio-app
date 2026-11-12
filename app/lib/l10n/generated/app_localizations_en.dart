@@ -75,6 +75,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
+  String get settingsLegalSection => 'Legal';
+
+  @override
+  String get settingsPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get privacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get privacyPolicyLastUpdated => 'Last updated: November 2026';
+
+  @override
+  String get privacyIntro =>
+      'This Privacy Policy explains how Buddha Dhamma (\"the app\") handles your information. The app is a Dhamma audio catalog for listening and publishing. By using the app, you agree to this policy.';
+
+  @override
+  String get privacyDataTitle => 'Information we collect';
+
+  @override
+  String get privacyDataBody =>
+      'The app does not require an account and does not collect personal information such as your name, email address, or phone number. We do not use advertising identifiers, analytics SDKs, or tracking tools.';
+
+  @override
+  String get privacyLocalTitle => 'Information stored on your device';
+
+  @override
+  String get privacyLocalBody =>
+      'Your language preference, saved favorites, playback progress, and downloaded audio are stored only on your device. You can remove downloads at any time from the Downloads tab, and clearing the app\'s data removes all locally stored information.';
+
+  @override
+  String get privacyNetworkTitle => 'Network requests';
+
+  @override
+  String get privacyNetworkBody =>
+      'The app connects to our catalog server to load dhamma talks, cover images, and audio streams. Like most internet services, the server may temporarily process standard technical data such as your IP address, device type, and request time to deliver content and keep the service secure. This data is not used to identify you personally.';
+
+  @override
+  String get privacySharingTitle => 'Sharing of information';
+
+  @override
+  String get privacySharingBody =>
+      'We do not sell, rent, or share your information with third parties. The app does not include third-party advertising or social media tracking.';
+
+  @override
+  String get privacyChildrenTitle => 'Children\'s privacy';
+
+  @override
+  String get privacyChildrenBody =>
+      'The app is suitable for general audiences, including children. Because we do not collect personal information, we do not knowingly collect data from children.';
+
+  @override
+  String get privacyChangesTitle => 'Changes to this policy';
+
+  @override
+  String get privacyChangesBody =>
+      'We may update this policy from time to time. Changes take effect when the updated policy is available in the app. Continued use of the app after an update means you accept the revised policy.';
+
+  @override
+  String get privacyContactTitle => 'Contact us';
+
+  @override
+  String get privacyContactBody =>
+      'If you have questions about this Privacy Policy, please contact us using the contact details listed on the app store page.';
+
+  @override
   String get libraryTitle => 'Saved';
 
   @override

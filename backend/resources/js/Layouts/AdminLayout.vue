@@ -19,6 +19,7 @@ const initials = computed(() => {
 const navigation = [
     { label: 'Dashboard', route: 'admin.dashboard', pattern: 'admin.dashboard' },
     { label: 'Audios', route: 'admin.audios.index', pattern: 'admin.audios.*' },
+    { label: 'Featured', route: 'admin.featured-audios.index', pattern: 'admin.featured-audios.*' },
     { label: 'Teachers', route: 'admin.teachers.index', pattern: 'admin.teachers.*' },
     { label: 'Categories', route: 'admin.categories.index', pattern: 'admin.categories.*' },
     { label: 'Audio types', route: 'admin.audio-types.index', pattern: 'admin.audio-types.*' },

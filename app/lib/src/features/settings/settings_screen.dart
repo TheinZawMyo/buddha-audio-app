@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/localization/locale_controller.dart';
 import '../../core/theme/app_theme.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -66,6 +67,21 @@ class SettingsScreen extends ConsumerWidget {
                 }
               },
             ),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            l10n.settingsLegalSection,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 4),
+          ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.settingsPrivacyPolicy),
+            trailing: const Icon(
+              Icons.chevron_right,
+              color: AppColors.mutedText,
+            ),
+            onTap: () => PrivacyPolicyScreen.open(context),
           ),
         ],
       ),
