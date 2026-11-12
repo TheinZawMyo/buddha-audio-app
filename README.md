@@ -199,9 +199,11 @@ overridden with environment variables:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `CATALOG_AUDIO_DISK` | `local` | Disk for private audio uploads |
-| `CATALOG_COVER_DISK` | `public` | Disk for public cover images |
+| `CATALOG_AUDIO_DISK` | `static` | Disk for private audio uploads |
+| `CATALOG_COVER_DISK` | `static` | Disk for cover images and teacher photos |
+| `STATIC_FILES_PATH` | `../static` (relative to `backend/`) | Root directory for uploaded media |
 | `CATALOG_PLAYBACK_URL_TTL` | `30` | Signed playback URL lifetime in minutes |
+| `CATALOG_AUDIO_MAX_BYTES` | `524288000` (500 MB) | Maximum audio upload size in bytes |
 | `CATALOG_PER_PAGE` | `15` | Admin pagination size |
 | `CATALOG_HOME_FEATURED_LIMIT` | `4` | Home featured audio limit |
 | `CATALOG_HOME_LATEST_LIMIT` | `8` | Home latest audio limit |
@@ -210,6 +212,23 @@ Database, cache, session, and filesystem settings use the standard Laravel
 `.env` variables. For production, switch `DB_CONNECTION` to MySQL/PostgreSQL,
 configure a persistent queue/cache, and point the storage disks at private
 S3-compatible object storage (or keep the local disk with durable volumes).
+
+By default, uploaded media is stored beside `backend/` in `static/audio/`,
+`static/covers/`, and `static/teachers/`. Audio remains private and is served
+through signed playback URLs; images are returned through the API media route.
+Selecting an audio file in the admin form uploads it in resumable chunks with
+Uppy + Tus to `static/audio/tus/`, then moves it to `static/audio/pending/` and
+displays a temporary signed playback link. Saving the form moves the selected
+file into `static/audio/` and associates it with the audio record.
+
+Uploads are sent in 5 MB chunks; make sure your web server or reverse proxy
+allows request bodies at least that large (for example, nginx
+`client_max_body_size`). The total file size is capped by
+`CATALOG_AUDIO_MAX_BYTES`.
+
+Before switching existing uploads, copy `backend/storage/app/private/audio/`
+to `static/audio/`, and copy `backend/storage/app/public/covers/` and
+`backend/storage/app/public/teachers/` to their matching `static/` subfolders.
 
 ## Testing and code style
 

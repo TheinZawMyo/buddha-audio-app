@@ -183,6 +183,21 @@ class PublicCatalogTest extends TestCase
         $this->get(route('api.v1.audios.stream', $audio->slug))->assertForbidden();
     }
 
+    public function test_media_route_serves_audio_files(): void
+    {
+        Storage::fake(config('catalog.audio_disk'));
+        Storage::disk(config('catalog.audio_disk'))->put('audio/test.mp3', 'fake-audio-bytes');
+
+        $this->get('/api/v1/media/audio/test.mp3')
+            ->assertOk()
+            ->assertHeader('Content-Type');
+    }
+
+    public function test_media_route_rejects_unknown_directories(): void
+    {
+        $this->get('/api/v1/media/private/test.mp3')->assertNotFound();
+    }
+
     public function test_inactive_teacher_is_not_public(): void
     {
         $teacher = Teacher::factory()->inactive()->create(['slug' => 'hidden-teacher']);

@@ -10,7 +10,7 @@ class RemoteCatalogSource {
   Future<HomeData> fetchHome() async {
     final body = await _client.get('/home');
     final data = asJsonMap(body['data']) ?? body;
-    return HomeData.fromJson(data);
+    return HomeData.fromJson(_resolveBackendUrls(data) as Map<String, dynamic>);
   }
 
   Future<PaginatedList<Audio>> fetchAudios({
@@ -35,6 +35,7 @@ class RemoteCatalogSource {
     return PaginatedList<Audio>(
       items: (body['data'] as List<dynamic>? ?? const [])
           .whereType<Map<String, dynamic>>()
+          .map((audio) => _resolveBackendUrls(audio) as Map<String, dynamic>)
           .map(Audio.fromJson)
           .toList(),
       pagination: Pagination.fromJson(asJsonMap(body['meta']?['pagination'])),
@@ -43,20 +44,23 @@ class RemoteCatalogSource {
 
   Future<Audio> fetchAudio(String slug) async {
     final body = await _client.get('/audios/$slug');
-    return Audio.fromJson(asJsonMap(body['data']) ?? const {});
+    final data = asJsonMap(body['data']) ?? const <String, dynamic>{};
+    return Audio.fromJson(_resolveBackendUrls(data) as Map<String, dynamic>);
   }
 
   Future<List<Teacher>> fetchTeachers() async {
     final body = await _client.get('/teachers');
     return (body['data'] as List<dynamic>? ?? const [])
         .whereType<Map<String, dynamic>>()
+        .map((teacher) => _resolveBackendUrls(teacher) as Map<String, dynamic>)
         .map(Teacher.fromJson)
         .toList();
   }
 
   Future<Teacher> fetchTeacher(String slug) async {
     final body = await _client.get('/teachers/$slug');
-    return Teacher.fromJson(asJsonMap(body['data']) ?? const {});
+    final data = asJsonMap(body['data']) ?? const <String, dynamic>{};
+    return Teacher.fromJson(_resolveBackendUrls(data) as Map<String, dynamic>);
   }
 
   Future<List<AudioCategory>> fetchCategories() async {
@@ -80,7 +84,31 @@ class RemoteCatalogSource {
     final body = await _client.post('/audios/$slug/playback-url');
     final data = asJsonMap(body['data']) ?? body;
     final url = data['playback_url'] ?? data['url'];
-    if (url is String && url.isNotEmpty) return url;
+    if (url is String && url.isNotEmpty) {
+      return _client.resolveBackendUrl(url);
+    }
+
     throw ApiException('ဖွင့်ရန် လင့်ခ် ရနိုင်ခြင်း မရှိပါ။');
+  }
+
+  dynamic _resolveBackendUrls(dynamic value) {
+    if (value is List) {
+      return value.map(_resolveBackendUrls).toList(growable: false);
+    }
+
+    if (value is! Map<String, dynamic>) {
+      return value;
+    }
+
+    return value.map((key, item) {
+      if ((key == 'cover_image_url' ||
+              key == 'photo_url' ||
+              key == 'playback_url') &&
+          item is String) {
+        return MapEntry(key, _client.resolveBackendUrl(item));
+      }
+
+      return MapEntry(key, _resolveBackendUrls(item));
+    });
   }
 }

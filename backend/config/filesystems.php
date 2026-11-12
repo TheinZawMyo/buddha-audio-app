@@ -47,6 +47,13 @@ return [
             'report' => false,
         ],
 
+        'static' => [
+            'driver' => 'local',
+            'root' => env('STATIC_FILES_PATH', dirname(base_path()).'/static'),
+            'throw' => true,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

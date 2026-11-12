@@ -27,6 +27,10 @@ class UpdateAudioRequest extends FormRequest
             'language' => ['required', 'string', 'max:8'],
             'duration_seconds' => ['required', 'integer', 'min:0', 'max:86400'],
             'audio_file' => ['nullable', 'file', 'mimes:mp3,wav,m4a,aac,ogg,opus,webm', 'max:512000'],
+            'audio_upload_path' => ['nullable', 'string', 'max:255'],
+            'audio_original_name' => ['required_with:audio_upload_path', 'nullable', 'string', 'max:255'],
+            'audio_mime' => ['nullable', 'string', 'max:255'],
+            'audio_size' => ['nullable', 'integer', 'min:0'],
             'cover_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'external_playback_url' => ['nullable', 'url', 'max:2048'],
         ];

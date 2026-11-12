@@ -10,6 +10,11 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class AudioStreamController extends Controller
 {
+    public function previewUpload(string $filename, MediaService $media): BinaryFileResponse
+    {
+        return $media->previewAudioSelection($filename);
+    }
+
     public function __invoke(Audio $audio, MediaService $media): BinaryFileResponse
     {
         abort_unless($audio->status === AudioStatus::Published, 404);

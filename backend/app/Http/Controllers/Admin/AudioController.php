@@ -10,14 +10,42 @@ use App\Models\Audio;
 use App\Services\AudioCategoryService;
 use App\Services\AudioService;
 use App\Services\AudioTypeService;
+use App\Services\MediaService;
 use App\Services\TeacherService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class AudioController extends Controller
 {
+    public function upload(Request $request, MediaService $media): JsonResponse
+    {
+        $request->validate([
+            'audio_file' => ['required', 'file', 'mimes:mp3,wav,m4a,aac,ogg,opus,webm', 'max:512000'],
+        ]);
+
+        $upload = $media->storeAudioForSelection($request->file('audio_file'));
+
+        return response()->json([
+            ...$upload,
+            'playback_url' => URL::temporarySignedRoute(
+                'api.v1.audio-uploads.preview',
+                now()->addMinutes((int) config('catalog.playback_url_ttl', 30)),
+                ['filename' => basename($upload['audio_path'])],
+            ),
+        ], 201);
+    }
+
+    public function discardUpload(string $filename, MediaService $media): JsonResponse
+    {
+        $media->discardAudioSelection($filename);
+
+        return response()->json(['message' => 'Upload discarded.']);
+    }
+
     public function index(Request $request, AudioService $audios, TeacherService $teachers): Response
     {
         $filters = [
@@ -114,6 +142,7 @@ class AudioController extends Controller
             'teachers' => $teachers->options(),
             'categories' => $categories->options(),
             'audioTypes' => $types->options(),
+            'audioMaxBytes' => (int) config('catalog.audio_max_bytes'),
         ];
     }
 }

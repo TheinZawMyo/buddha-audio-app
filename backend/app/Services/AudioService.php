@@ -6,6 +6,7 @@ use App\Enums\AudioStatus;
 use App\Models\Audio;
 use App\Repositories\Contracts\AudioRepositoryInterface;
 use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -48,7 +49,7 @@ class AudioService
     /**
      * @param  array{query?: string|null, status?: string|null, teacher?: string|null}  $filters
      */
-    public function paginateForAdmin(array $filters): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    public function paginateForAdmin(array $filters): LengthAwarePaginator
     {
         return $this->audios->paginateForAdmin($filters, (int) config('catalog.per_page', 15));
     }
@@ -64,6 +65,10 @@ class AudioService
      */
     public function create(array $data, array $categoryIds, ?UploadedFile $audioFile = null, ?UploadedFile $cover = null): Audio
     {
+        $audioUploadPath = $data['audio_upload_path'] ?? null;
+        $audioOriginalName = $data['audio_original_name'] ?? null;
+        unset($data['audio_upload_path'], $data['audio_original_name'], $data['audio_mime'], $data['audio_size']);
+
         $data['slug'] = $this->slugs->resolve(Audio::class, $data['slug'] ?? null, $data['title']);
         $data['status'] = AudioStatus::Draft;
         $data['published_at'] = null;
@@ -72,6 +77,11 @@ class AudioService
 
         if ($audioFile) {
             $data = [...$data, ...$this->media->storeAudio($audioFile)];
+        } elseif (filled($audioUploadPath)) {
+            $data = [...$data, ...$this->media->finalizeAudioSelection(
+                $audioUploadPath,
+                (string) $audioOriginalName,
+            )];
         }
 
         if ($cover) {
@@ -91,12 +101,23 @@ class AudioService
      */
     public function update(Audio $audio, array $data, array $categoryIds, ?UploadedFile $audioFile = null, ?UploadedFile $cover = null): Audio
     {
+        $audioUploadPath = $data['audio_upload_path'] ?? null;
+        $audioOriginalName = $data['audio_original_name'] ?? null;
+        unset($data['audio_upload_path'], $data['audio_original_name'], $data['audio_mime'], $data['audio_size']);
+
         $data['slug'] = $this->slugs->resolve(Audio::class, $data['slug'] ?? null, $data['title'], $audio->id);
         $data['updated_by'] = Auth::id();
 
+        $previousAudioPath = null;
         if ($audioFile) {
-            $this->media->deleteAudio($audio->audio_path);
+            $previousAudioPath = $audio->audio_path;
             $data = [...$data, ...$this->media->storeAudio($audioFile)];
+        } elseif (filled($audioUploadPath)) {
+            $previousAudioPath = $audio->audio_path;
+            $data = [...$data, ...$this->media->finalizeAudioSelection(
+                $audioUploadPath,
+                (string) $audioOriginalName,
+            )];
         }
 
         if ($cover) {
@@ -105,6 +126,10 @@ class AudioService
         }
 
         $updated = $this->audios->update($audio, $data, $categoryIds);
+
+        if ($previousAudioPath !== null && $updated->audio_path !== $previousAudioPath) {
+            $this->media->deleteAudio($previousAudioPath);
+        }
 
         $this->audit->record('updated', $updated, "Audio \"{$updated->title}\" updated.", $data);
 

@@ -146,7 +146,10 @@ const formatDate = (value) => {
                             <span class="text-[11px] text-[#A39283]">{{ formatDate(log.created_at) }}</span>
                         </div>
                         <p class="mt-1 text-sm text-[#4A3A2C]">{{ log.description }}</p>
-                        <p class="text-xs text-[#8A7969]">{{ log.user?.name ?? 'System' }}</p>
+                        <p class="text-xs text-[#8A7969]">
+                            {{ log.user?.name ?? 'System' }}
+                            <span v-if="log.ip_address"> · {{ log.ip_address }}</span>
+                        </p>
                     </li>
                     <li v-if="!recentAuditLogs?.length" class="px-5 py-10 text-center text-sm text-[#8A7969]">
                         No activity recorded yet.

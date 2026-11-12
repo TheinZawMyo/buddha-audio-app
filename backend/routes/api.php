@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AudioController;
 use App\Http\Controllers\Api\V1\AudioStreamController;
 use App\Http\Controllers\Api\V1\AudioTypeController;
 use App\Http\Controllers\Api\V1\HomeController;
+use App\Http\Controllers\Api\V1\MediaImageController;
 use App\Http\Controllers\Api\V1\TeacherController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +25,14 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
     Route::get('/categories', [AudioCategoryController::class, 'index'])->name('categories.index');
 
     Route::get('/audio-types', [AudioTypeController::class, 'index'])->name('audio-types.index');
+
+    Route::get('/media/{directory}/{filename}', MediaImageController::class)
+        ->where('directory', 'covers|teachers|audio')
+        ->where('filename', '[A-Za-z0-9._-]+')
+        ->name('media.images.show');
+
+    Route::get('/audio-uploads/{filename}', [AudioStreamController::class, 'previewUpload'])
+        ->middleware('signed')
+        ->where('filename', '[A-Za-z0-9._-]+')
+        ->name('audio-uploads.preview');
 });

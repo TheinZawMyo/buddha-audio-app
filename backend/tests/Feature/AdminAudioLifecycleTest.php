@@ -62,6 +62,31 @@ class AdminAudioLifecycleTest extends TestCase
         ]);
     }
 
+    public function test_audio_audit_log_records_the_forwarded_client_ip(): void
+    {
+        $teacher = Teacher::factory()->create();
+        $type = AudioType::factory()->create();
+
+        $this->actingAs($this->admin)
+            ->withHeader('X-Forwarded-For', '203.0.113.9')
+            ->post(route('admin.audios.store'), [
+                'title' => 'Forwarded IP Talk',
+                'slug' => 'forwarded-ip-talk',
+                'teacher_id' => $teacher->id,
+                'audio_type_id' => $type->id,
+                'language' => 'my',
+                'duration_seconds' => 120,
+                'external_playback_url' => 'https://cdn.example.com/forwarded-ip-talk.mp3',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'created',
+            'auditable_type' => Audio::class,
+            'ip_address' => '203.0.113.9',
+        ]);
+    }
+
     public function test_audio_requires_title_teacher_and_type(): void
     {
         $this->actingAs($this->admin)
@@ -212,7 +237,9 @@ class AdminAudioLifecycleTest extends TestCase
                 'audio_type_id' => $type->id,
                 'language' => 'my',
                 'duration_seconds' => 90,
-                'audio_file' => UploadedFile::fake()->create('talk.mp3', 100, 'audio/mpeg'),
+                'external_playback_url' => 'https://cdn.example.com/old-talk.mp3',
+                'audio_file' => UploadedFile::fake()->createWithContent('talk.mp3', 'complete audio bytes'),
+                'cover_image' => UploadedFile::fake()->image('cover.jpg', 240, 240),
             ])
             ->assertSessionHasNoErrors();
 
@@ -221,11 +248,97 @@ class AdminAudioLifecycleTest extends TestCase
         $this->assertNotNull($audio->audio_path);
         $this->assertSame('talk.mp3', $audio->audio_original_name);
         Storage::disk(config('catalog.audio_disk'))->assertExists($audio->audio_path);
+        $this->assertSame(
+            'complete audio bytes',
+            Storage::disk(config('catalog.audio_disk'))->get($audio->audio_path),
+        );
+        $this->assertStringContainsString('/api/v1/audios/uploaded-talk/stream?', $audio->playback_url);
+        Storage::disk(config('catalog.cover_disk'))->assertExists($audio->cover_path);
+        $this->get($audio->cover_image_url)->assertOk();
 
         $this->actingAs($this->admin)
             ->post(route('admin.audios.publish', $audio->slug))
             ->assertSessionHasNoErrors();
 
         $this->get($audio->refresh()->playback_url)->assertOk();
+    }
+
+    public function test_audio_upload_returns_a_link_before_the_audio_form_is_saved(): void
+    {
+        $uploadResponse = $this->actingAs($this->admin)
+            ->postJson(route('admin.audios.upload'), [
+                'audio_file' => UploadedFile::fake()->createWithContent('selected-talk.mp3', 'complete audio content'),
+            ])
+            ->assertCreated()
+            ->assertJsonStructure(['audio_path', 'audio_original_name', 'playback_url']);
+
+        $upload = $uploadResponse->json();
+        Storage::disk(config('catalog.audio_disk'))->assertExists($upload['audio_path']);
+        $this->get($upload['playback_url'])->assertOk();
+        $this->assertSame(
+            'complete audio content',
+            Storage::disk(config('catalog.audio_disk'))->get($upload['audio_path']),
+        );
+
+        $teacher = Teacher::factory()->create();
+        $type = AudioType::factory()->create();
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.audios.store'), [
+                'title' => 'Selected Talk',
+                'teacher_id' => $teacher->id,
+                'audio_type_id' => $type->id,
+                'language' => 'my',
+                'duration_seconds' => 90,
+                'audio_upload_path' => $upload['audio_path'],
+                'audio_original_name' => $upload['audio_original_name'],
+            ])
+            ->assertSessionHasNoErrors();
+
+        $audio = Audio::query()->where('slug', 'selected-talk')->firstOrFail();
+
+        $this->assertSame('audio/'.basename($upload['audio_path']), $audio->audio_path);
+        $this->assertNull($audio->external_playback_url);
+        $this->assertStringContainsString('/api/v1/audios/selected-talk/stream?', $audio->playback_url);
+        Storage::disk(config('catalog.audio_disk'))->assertMissing($upload['audio_path']);
+        Storage::disk(config('catalog.audio_disk'))->assertExists($audio->audio_path);
+    }
+
+    public function test_replacing_uploaded_audio_updates_the_playback_file(): void
+    {
+        Storage::disk(config('catalog.audio_disk'))->put('audio/old-talk.mp3', 'old audio bytes');
+
+        $audio = Audio::factory()->published()->create([
+            'slug' => 'replaceable-talk',
+            'audio_path' => 'audio/old-talk.mp3',
+            'audio_original_name' => 'old-talk.mp3',
+            'audio_mime' => 'audio/mpeg',
+            'audio_size' => strlen('old audio bytes'),
+        ]);
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.audios.update', $audio->slug), [
+                'title' => $audio->title,
+                'slug' => $audio->slug,
+                'teacher_id' => $audio->teacher_id,
+                'audio_type_id' => $audio->audio_type_id,
+                'language' => $audio->language,
+                'duration_seconds' => $audio->duration_seconds,
+                'external_playback_url' => 'https://cdn.example.com/fallback.mp3',
+                'audio_file' => UploadedFile::fake()->createWithContent('new-talk.mp3', 'new complete audio bytes'),
+            ])
+            ->assertSessionHasNoErrors();
+
+        $audio->refresh();
+
+        $this->assertSame('new-talk.mp3', $audio->audio_original_name);
+        $this->assertNotSame('audio/old-talk.mp3', $audio->audio_path);
+        Storage::disk(config('catalog.audio_disk'))->assertMissing('audio/old-talk.mp3');
+        $this->assertSame(
+            'new complete audio bytes',
+            Storage::disk(config('catalog.audio_disk'))->get($audio->audio_path),
+        );
+        $this->assertStringContainsString('/api/v1/audios/replaceable-talk/stream?', $audio->playback_url);
+        $this->get($audio->playback_url)->assertOk();
     }
 }

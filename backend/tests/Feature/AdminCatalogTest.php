@@ -46,6 +46,7 @@ class AdminCatalogTest extends TestCase
         $this->assertTrue($teacher->is_active);
         $this->assertNotNull($teacher->photo_path);
         Storage::disk(config('catalog.cover_disk'))->assertExists($teacher->photo_path);
+        $this->get($teacher->photo_url)->assertOk();
 
         $this->assertDatabaseHas('audit_logs', [
             'action' => 'created',

@@ -2,10 +2,11 @@
 
 use App\Http\Controllers\Admin\AudioCategoryController;
 use App\Http\Controllers\Admin\AudioController;
-use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\AudioTypeController;
+use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Admin\TusUploadController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,6 +34,19 @@ Route::middleware(['auth', 'active'])
 
         Route::post('audios/{audio}/publish', [AudioController::class, 'publish'])->name('audios.publish');
         Route::post('audios/{audio}/archive', [AudioController::class, 'archive'])->name('audios.archive');
+
+        Route::post('audios/tus', [TusUploadController::class, 'create'])->name('audios.tus.create');
+        Route::match(['options'], 'audios/tus', [TusUploadController::class, 'options'])->name('audios.tus.options');
+        Route::match(['head'], 'audios/tus/{upload}', [TusUploadController::class, 'head'])->name('audios.tus.head');
+        Route::patch('audios/tus/{upload}', [TusUploadController::class, 'patch'])->name('audios.tus.patch');
+        Route::delete('audios/tus/{upload}', [TusUploadController::class, 'destroy'])->name('audios.tus.destroy');
+        Route::match(['options'], 'audios/tus/{upload}', [TusUploadController::class, 'options']);
+        Route::post('audios/tus/{upload}/complete', [TusUploadController::class, 'complete'])->name('audios.tus.complete');
+
+        Route::post('audios/upload', [AudioController::class, 'upload'])->name('audios.upload');
+        Route::delete('audios/upload/{filename}', [AudioController::class, 'discardUpload'])
+            ->where('filename', '[A-Za-z0-9._-]+')
+            ->name('audios.upload.discard');
         Route::resource('audios', AudioController::class)->except('show');
 
         Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');

@@ -5,18 +5,17 @@ namespace App\Models;
 use App\Enums\AudioStatus;
 use Database\Factories\AudioFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Table;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Attributes\RouteKey;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
 #[Fillable([
@@ -57,26 +56,25 @@ class Audio extends Model
     protected function playbackUrl(): Attribute
     {
         return Attribute::get(function (): ?string {
-            if (filled($this->external_playback_url)) {
-                return $this->external_playback_url;
+            if (filled($this->audio_path)) {
+                return URL::temporarySignedRoute(
+                    'api.v1.audios.stream',
+                    now()->addMinutes((int) config('catalog.playback_url_ttl', 30)),
+                    ['audio' => $this->slug],
+                );
             }
 
-            if (! filled($this->audio_path)) {
-                return null;
-            }
-
-            return URL::temporarySignedRoute(
-                'api.v1.audios.stream',
-                now()->addMinutes((int) config('catalog.playback_url_ttl', 30)),
-                ['audio' => $this->slug],
-            );
+            return $this->external_playback_url;
         });
     }
 
     protected function coverImageUrl(): Attribute
     {
         return Attribute::get(fn (): ?string => $this->cover_url
-            ?: ($this->cover_path ? Storage::disk('public')->url($this->cover_path) : null));
+            ?: ($this->cover_path ? route('api.v1.media.images.show', [
+                'directory' => 'covers',
+                'filename' => basename($this->cover_path),
+            ]) : null));
     }
 
     /**

@@ -14,30 +14,56 @@ class ApiException implements Exception {
 /// `{ "data": ..., "meta": { "pagination": ... } }` plus field validation errors.
 class ApiClient {
   ApiClient(this.baseUrl)
-      : _dio = Dio(
-          BaseOptions(
-            baseUrl: baseUrl,
-            connectTimeout: const Duration(seconds: 15),
-            receiveTimeout: const Duration(seconds: 25),
-            headers: const {'Accept': 'application/json'},
-          ),
-        );
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: baseUrl,
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 25),
+          headers: const {'Accept': 'application/json'},
+        ),
+      );
 
   final String baseUrl;
   final Dio _dio;
 
+  String resolveBackendUrl(String url) {
+    final uri = Uri.tryParse(url);
+    final apiOrigin = Uri.tryParse(baseUrl);
+    if (uri == null ||
+        apiOrigin == null ||
+        !uri.hasScheme ||
+        !apiOrigin.hasScheme) {
+      return url;
+    }
+
+    final isImageRoute = RegExp(r'^/api/v1/media/(covers|teachers|audio)/[^/]+$')
+        .hasMatch(uri.path);
+    final isAudioStreamRoute = RegExp(r'^/api/v1/audios/[^/]+/stream$')
+        .hasMatch(uri.path);
+
+    if ((!isImageRoute && !isAudioStreamRoute) ||
+        uri.origin == apiOrigin.origin) {
+      return url;
+    }
+
+    final pathStart = url.indexOf(uri.path);
+    if (pathStart < 0) {
+      return url;
+    }
+
+    return '${apiOrigin.origin}${url.substring(pathStart)}';
+  }
+
   Future<Map<String, dynamic>> get(
     String path, {
     Map<String, dynamic>? queryParameters,
-  }) =>
-      _request('GET', path, queryParameters: queryParameters);
+  }) => _request('GET', path, queryParameters: queryParameters);
 
   Future<Map<String, dynamic>> post(
     String path, {
     Object? data,
     Map<String, dynamic>? queryParameters,
-  }) =>
-      _request('POST', path, data: data, queryParameters: queryParameters);
+  }) => _request('POST', path, data: data, queryParameters: queryParameters);
 
   Future<Map<String, dynamic>> _request(
     String method,
