@@ -7,6 +7,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class MediaService
 {
@@ -132,9 +133,10 @@ class MediaService
         }
     }
 
-    public function stream(Audio $audio): BinaryFileResponse
+    public function stream(Audio $audio): Response
     {
-        $disk = Storage::disk(config('catalog.audio_disk'));
+        $diskName = config('catalog.audio_disk');
+        $disk = Storage::disk($diskName);
 
         if (! filled($audio->audio_path) || ! $disk->exists($audio->audio_path)) {
             throw new HttpResponseException(response()->json([
@@ -142,14 +144,14 @@ class MediaService
             ], 404));
         }
 
-        return response()->file($disk->path($audio->audio_path), [
+        return $this->fileResponse($diskName, $audio->audio_path, [
             'Content-Type' => $audio->audio_mime ?: 'application/octet-stream',
             'Content-Disposition' => 'inline; filename="'.$audio->slug.'.'.pathinfo($audio->audio_path, PATHINFO_EXTENSION).'"',
             'Cache-Control' => 'private, max-age=0, must-revalidate',
         ]);
     }
 
-    public function serveMedia(string $directory, string $filename): BinaryFileResponse
+    public function serveMedia(string $directory, string $filename): Response
     {
         if (
             ! in_array($directory, ['covers', 'teachers', 'audio'], true)
@@ -159,20 +161,47 @@ class MediaService
             abort(404);
         }
 
-        $disk = Storage::disk(
-            $directory === 'audio'
-                ? config('catalog.audio_disk')
-                : config('catalog.cover_disk'),
-        );
+        $diskName = $directory === 'audio'
+            ? config('catalog.audio_disk')
+            : config('catalog.cover_disk');
+        $disk = Storage::disk($diskName);
         $path = $directory.'/'.$filename;
 
         if (! $disk->exists($path)) {
             abort(404);
         }
 
-        return response()->file($disk->path($path), [
+        return $this->fileResponse($diskName, $path, [
             'Content-Type' => $disk->mimeType($path) ?: 'application/octet-stream',
             'Cache-Control' => 'public, max-age=3600',
         ]);
+    }
+
+    /**
+     * @param  array<string, string>  $headers
+     */
+    private function fileResponse(string $diskName, string $path, array $headers): Response
+    {
+        if (
+            config('catalog.nginx_media.enabled')
+            && config('filesystems.disks.'.$diskName.'.driver') === 'local'
+        ) {
+            $segments = explode('/', trim($path, '/'));
+            if (in_array('.', $segments, true) || in_array('..', $segments, true)) {
+                abort(404);
+            }
+
+            $prefix = '/'.trim((string) config('catalog.nginx_media.internal_prefix'), '/');
+            $encodedPath = implode('/', array_map('rawurlencode', $segments));
+
+            return response('', 200, [
+                ...$headers,
+                'X-Accel-Redirect' => $prefix.'/'.$encodedPath,
+            ]);
+        }
+
+        $disk = Storage::disk($diskName);
+
+        return response()->file($disk->path($path), $headers);
     }
 }

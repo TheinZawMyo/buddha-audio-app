@@ -4,6 +4,11 @@ return [
     'audio_disk' => env('CATALOG_AUDIO_DISK', 'static'),
     'cover_disk' => env('CATALOG_COVER_DISK', 'static'),
 
+    'nginx_media' => [
+        'enabled' => (bool) env('CATALOG_NGINX_MEDIA_ENABLED', false),
+        'internal_prefix' => env('CATALOG_NGINX_MEDIA_INTERNAL_PREFIX', '/_protected_media'),
+    ],
+
     'playback_url_ttl' => (int) env('CATALOG_PLAYBACK_URL_TTL', 30),
 
     'audio_max_bytes' => (int) env('CATALOG_AUDIO_MAX_BYTES', 512000 * 1024),

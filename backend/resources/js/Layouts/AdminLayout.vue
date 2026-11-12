@@ -70,14 +70,23 @@ const isActive = (pattern) => route().current(pattern);
                         <div class="truncate text-xs text-white/50">{{ user?.role }}</div>
                     </div>
                 </div>
-                <Link
-                    :href="route('logout')"
-                    method="post"
-                    as="button"
-                    class="w-full rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white/80 transition hover:bg-white/10 hover:text-white"
-                >
-                    Log out
-                </Link>
+                <div class="space-y-2">
+                    <Link
+                        :href="route('admin.password.edit')"
+                        class="block w-full rounded-lg px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white/70 transition hover:bg-white/10 hover:text-white"
+                        :class="{ 'bg-white/10 text-white': isActive('admin.password.*') }"
+                    >
+                        Change password
+                    </Link>
+                    <Link
+                        :href="route('logout')"
+                        method="post"
+                        as="button"
+                        class="w-full rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white/80 transition hover:bg-white/10 hover:text-white"
+                    >
+                        Log out
+                    </Link>
+                </div>
             </div>
         </aside>
 
@@ -90,9 +99,14 @@ const isActive = (pattern) => route().current(pattern);
                         </div>
                         <span class="text-sm font-semibold">Buddha Audio</span>
                     </div>
-                    <Link :href="route('logout')" method="post" as="button" class="text-xs text-white/80">
-                        Log out
-                    </Link>
+                    <div class="flex items-center gap-3">
+                        <Link :href="route('admin.password.edit')" class="text-xs text-white/80">
+                            Password
+                        </Link>
+                        <Link :href="route('logout')" method="post" as="button" class="text-xs text-white/80">
+                            Log out
+                        </Link>
+                    </div>
                 </div>
                 <nav class="flex gap-1 overflow-x-auto px-3 pb-2">
                     <Link

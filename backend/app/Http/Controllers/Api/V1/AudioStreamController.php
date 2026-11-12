@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Audio;
 use App\Services\MediaService;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class AudioStreamController extends Controller
 {
@@ -15,7 +16,7 @@ class AudioStreamController extends Controller
         return $media->previewAudioSelection($filename);
     }
 
-    public function __invoke(Audio $audio, MediaService $media): BinaryFileResponse
+    public function __invoke(Audio $audio, MediaService $media): Response
     {
         abort_unless($audio->status === AudioStatus::Published, 404);
 

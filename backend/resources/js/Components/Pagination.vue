@@ -11,7 +11,7 @@ defineProps({
 
 <template>
     <div
-        v-if="paginator.links && paginator.links.length > 3"
+        v-if="paginator.total > 0"
         class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
     >
         <p class="text-xs text-[#6B5A4C]">

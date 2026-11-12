@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AudioController;
 use App\Http\Controllers\Admin\AudioTypeController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\PasswordController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\TusUploadController;
 use App\Http\Controllers\ProfileController;
@@ -50,6 +51,8 @@ Route::middleware(['auth', 'active'])
         Route::resource('audios', AudioController::class)->except('show');
 
         Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+
+        Route::get('password', [PasswordController::class, 'edit'])->name('password.edit');
     });
 
 require __DIR__.'/auth.php';
