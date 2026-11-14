@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "DhammaWave",
+  "splashMessage": "You can now listen to Dhamma teachings.",
   "navHome": "Home",
   "navBrowse": "Browse",
   "navSearch": "Search",

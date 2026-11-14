@@ -13,6 +13,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'DhammaWave';
 
   @override
+  String get splashMessage => 'You can now listen to Dhamma teachings.';
+
+  @override
   String get navHome => 'Home';
 
   @override

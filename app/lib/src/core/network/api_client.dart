@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/app_config.dart';
 
@@ -27,6 +30,10 @@ class ApiClient {
 
   final String baseUrl;
   final Dio _dio;
+
+  static const _cachePrefix = 'catalog_response_v1:';
+  static const _cacheIndexKey = 'catalog_response_index_v1';
+  static const _maxCachedResponses = 40;
 
   String resolveBackendUrl(String url) {
     final uri = Uri.tryParse(url);
@@ -74,6 +81,7 @@ class ApiClient {
     Object? data,
     Map<String, dynamic>? queryParameters,
   }) async {
+    final cacheKey = method == 'GET' ? _cacheKey(path, queryParameters) : null;
     try {
       final response = await _dio.request<Map<String, dynamic>>(
         path,
@@ -81,9 +89,65 @@ class ApiClient {
         queryParameters: queryParameters,
         options: Options(method: method),
       );
-      return response.data ?? const <String, dynamic>{};
+      final body = response.data ?? const <String, dynamic>{};
+      if (cacheKey != null) {
+        await _writeCachedResponse(cacheKey, body);
+      }
+      return body;
     } on DioException catch (e) {
+      if (cacheKey != null && _canUseCachedResponse(e)) {
+        final cached = await _readCachedResponse(cacheKey);
+        if (cached != null) return cached;
+      }
       throw _mapError(e);
+    }
+  }
+
+  String _cacheKey(String path, Map<String, dynamic>? queryParameters) {
+    final sortedQuery = <String, dynamic>{};
+    if (queryParameters != null) {
+      for (final key in queryParameters.keys.toList()..sort()) {
+        sortedQuery[key] = queryParameters[key];
+      }
+    }
+    return '$_cachePrefix${baseUrl.trim()}|$path|${jsonEncode(sortedQuery)}';
+  }
+
+  bool _canUseCachedResponse(DioException error) {
+    final statusCode = error.response?.statusCode;
+    return statusCode == null || statusCode >= 500;
+  }
+
+  Future<Map<String, dynamic>?> _readCachedResponse(String key) async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final encoded = preferences.getString(key);
+      if (encoded == null) return null;
+      final decoded = jsonDecode(encoded);
+      if (decoded is Map<String, dynamic>) return decoded;
+    } catch (_) {
+      // A cache read must never prevent the normal network error from surfacing.
+    }
+    return null;
+  }
+
+  Future<void> _writeCachedResponse(
+    String key,
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      await preferences.setString(key, jsonEncode(body));
+
+      final keys = preferences.getStringList(_cacheIndexKey) ?? <String>[];
+      keys.remove(key);
+      keys.add(key);
+      while (keys.length > _maxCachedResponses) {
+        await preferences.remove(keys.removeAt(0));
+      }
+      await preferences.setStringList(_cacheIndexKey, keys);
+    } catch (_) {
+      // Caching is best effort; a storage issue must not fail a successful API call.
     }
   }
 

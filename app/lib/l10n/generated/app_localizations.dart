@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'DhammaWave'**
   String get appTitle;
 
+  /// No description provided for @splashMessage.
+  ///
+  /// In my, this message translates to:
+  /// **'ဓမ္မတရားတော်များနာယူနိုင်ပါပြီ'**
+  String get splashMessage;
+
   /// No description provided for @navHome.
   ///
   /// In my, this message translates to:

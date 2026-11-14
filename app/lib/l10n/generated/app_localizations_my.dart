@@ -13,6 +13,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get appTitle => 'DhammaWave';
 
   @override
+  String get splashMessage => 'ဓမ္မတရားတော်များနာယူနိုင်ပါပြီ';
+
+  @override
   String get navHome => 'ပင်မ';
 
   @override
