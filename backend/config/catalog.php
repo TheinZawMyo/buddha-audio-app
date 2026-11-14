@@ -15,6 +15,11 @@ return [
 
     'per_page' => (int) env('CATALOG_PER_PAGE', 15),
 
+    'cache' => [
+        'store' => env('CATALOG_CACHE_STORE', env('CACHE_STORE', 'redis')),
+        'ttl' => (int) env('CATALOG_CACHE_TTL', 300),
+    ],
+
     'home' => [
         'featured_limit' => (int) env('CATALOG_HOME_FEATURED_LIMIT', 4),
         'latest_limit' => (int) env('CATALOG_HOME_LATEST_LIMIT', 8),

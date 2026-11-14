@@ -4,39 +4,24 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\IndexAudioRequest;
-use App\Http\Resources\Api\V1\AudioResource;
 use App\Services\AudioService;
+use App\Services\CatalogCacheService;
 use Illuminate\Http\JsonResponse;
 
 class AudioController extends Controller
 {
-    public function index(IndexAudioRequest $request, AudioService $audios): JsonResponse
+    public function index(IndexAudioRequest $request, CatalogCacheService $cache): JsonResponse
     {
         $filters = $request->filters();
         $limit = $filters['limit'];
         unset($filters['limit']);
 
-        $result = $audios->publicList($filters, $limit);
-
-        return response()->json([
-            'data' => AudioResource::collection($result['audios']->items())->resolve(),
-            'meta' => [
-                'pagination' => [
-                    'next_cursor' => $result['audios']->nextCursor()?->encode(),
-                    'has_more' => $result['audios']->hasMorePages(),
-                    'total' => $result['total'],
-                ],
-            ],
-        ]);
+        return response()->json($cache->audioIndex($filters, $limit));
     }
 
-    public function show(string $slug, AudioService $audios): JsonResponse
+    public function show(string $slug, CatalogCacheService $cache): JsonResponse
     {
-        $audio = $audios->findPublishedBySlug($slug);
-
-        return response()->json([
-            'data' => AudioResource::make($audio)->resolve(),
-        ]);
+        return response()->json($cache->audio($slug));
     }
 
     public function playbackUrl(string $slug, AudioService $audios): JsonResponse

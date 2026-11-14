@@ -8,6 +8,7 @@ use App\Models\AudioType;
 use App\Models\FeaturedAudio;
 use App\Models\Teacher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -233,5 +234,29 @@ class PublicCatalogTest extends TestCase
         $this->getJson('/api/v1/teachers')
             ->assertOk()
             ->assertJsonCount(0, 'data');
+    }
+
+    public function test_api_responses_are_cached_and_invalidated_on_catalog_changes(): void
+    {
+        $audio = Audio::factory()->published()->create([
+            'slug' => 'cached-audio',
+            'title' => 'Cached Title',
+        ]);
+
+        $this->getJson('/api/v1/audios/cached-audio')
+            ->assertOk()
+            ->assertJsonPath('data.title', 'Cached Title');
+
+        DB::table('audios')->where('id', $audio->id)->update(['title' => 'Changed Outside Eloquent']);
+
+        $this->getJson('/api/v1/audios/cached-audio')
+            ->assertOk()
+            ->assertJsonPath('data.title', 'Cached Title');
+
+        $audio->update(['title' => 'Updated Through Eloquent']);
+
+        $this->getJson('/api/v1/audios/cached-audio')
+            ->assertOk()
+            ->assertJsonPath('data.title', 'Updated Through Eloquent');
     }
 }

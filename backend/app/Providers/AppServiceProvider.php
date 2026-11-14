@@ -2,6 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Audio;
+use App\Models\AudioCategory;
+use App\Models\AudioType;
+use App\Models\FeaturedAudio;
+use App\Models\Teacher;
 use App\Repositories\Contracts\AudioCategoryRepositoryInterface;
 use App\Repositories\Contracts\AudioRepositoryInterface;
 use App\Repositories\Contracts\AudioTypeRepositoryInterface;
@@ -14,7 +19,9 @@ use App\Repositories\Eloquent\EloquentAudioTypeRepository;
 use App\Repositories\Eloquent\EloquentAuditLogRepository;
 use App\Repositories\Eloquent\EloquentFeaturedAudioRepository;
 use App\Repositories\Eloquent\EloquentTeacherRepository;
+use App\Services\CatalogCacheService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -41,5 +48,34 @@ class AppServiceProvider extends ServiceProvider
         Vite::prefetch(concurrency: 3);
 
         Model::preventLazyLoading(! app()->isProduction());
+
+        $this->syncApiCacheOnCatalogChanges();
+    }
+
+    private function syncApiCacheOnCatalogChanges(): void
+    {
+        $models = [Audio::class, AudioCategory::class, AudioType::class, FeaturedAudio::class, Teacher::class];
+
+        foreach ($models as $model) {
+            $model::saved(function (Model $instance): void {
+                $cache = app(CatalogCacheService::class);
+
+                $cache->flush();
+
+                if (! app()->runningUnitTests()) {
+                    DB::afterCommit(fn () => $cache->warm($instance));
+                }
+            });
+
+            $model::deleted(function (): void {
+                $cache = app(CatalogCacheService::class);
+
+                $cache->flush();
+
+                if (! app()->runningUnitTests()) {
+                    DB::afterCommit(fn () => $cache->warm());
+                }
+            });
+        }
     }
 }

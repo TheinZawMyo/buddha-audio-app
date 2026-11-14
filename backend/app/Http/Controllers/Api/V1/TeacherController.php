@@ -3,27 +3,22 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Api\V1\TeacherResource;
-use App\Services\TeacherService;
+use App\Services\CatalogCacheService;
 use Illuminate\Http\JsonResponse;
 
 class TeacherController extends Controller
 {
-    public function index(TeacherService $teachers): JsonResponse
+    public function index(CatalogCacheService $cache): JsonResponse
     {
-        return response()->json([
-            'data' => TeacherResource::collection($teachers->activeList())->resolve(),
-        ]);
+        return response()->json($cache->teachers());
     }
 
-    public function show(string $slug, TeacherService $teachers): JsonResponse
+    public function show(string $slug, CatalogCacheService $cache): JsonResponse
     {
-        $teacher = $teachers->findBySlug($slug);
+        $payload = $cache->teacher($slug);
 
-        abort_unless($teacher->is_active, 404);
+        abort_if($payload === null, 404);
 
-        return response()->json([
-            'data' => TeacherResource::make($teacher)->resolve(),
-        ]);
+        return response()->json($payload);
     }
 }
