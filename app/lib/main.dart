@@ -27,8 +27,8 @@ Future<void> main() async {
     config: AudioServiceConfig(
       androidNotificationChannelId: 'mm.buddha.audio.channel',
       androidNotificationChannelName: isEnglish
-          ? 'Buddha Dhamma Playback'
-          : 'ဗုဒ္ဓသံသာ အသံဖွင့်ခြင်း',
+          ? 'DhammaWave Playback'
+          : 'DhammaWave အသံဖွင့်ခြင်း',
       androidNotificationOngoing: true,
       androidStopForegroundOnPause: true,
       fastForwardInterval: Duration(seconds: 10),

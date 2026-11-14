@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -38,6 +39,9 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'success' => fn (): ?string => session('success'),
                 'error' => fn (): ?string => session('error'),
+                'apiKey' => fn (): ?string => session('encryptedApiKey') !== null
+                    ? Crypt::decryptString(session('encryptedApiKey'))
+                    : null,
             ],
         ];
     }

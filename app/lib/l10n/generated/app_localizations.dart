@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In my, this message translates to:
-  /// **'ဗုဒ္ဓသံသာ'**
+  /// **'DhammaWave'**
   String get appTitle;
 
   /// No description provided for @navHome.

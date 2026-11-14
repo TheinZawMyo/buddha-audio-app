@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 
+import '../config/app_config.dart';
+
 class ApiException implements Exception {
   ApiException(this.message, {this.statusCode});
 
@@ -19,7 +21,7 @@ class ApiClient {
           baseUrl: baseUrl,
           connectTimeout: const Duration(seconds: 15),
           receiveTimeout: const Duration(seconds: 25),
-          headers: const {'Accept': 'application/json'},
+          headers: {'Accept': 'application/json', ...apiKeyHeaders},
         ),
       );
 
@@ -36,8 +38,9 @@ class ApiClient {
       return url;
     }
 
-    final isImageRoute = RegExp(r'^/api/v1/media/(covers|teachers|audio)/[^/]+$')
-        .hasMatch(uri.path);
+    final isImageRoute = RegExp(
+      r'^/api/v1/media/(covers|teachers|audio)/[^/]+$',
+    ).hasMatch(uri.path);
     final isAudioStreamRoute = RegExp(r'^/api/v1/audios/[^/]+/stream$')
         .hasMatch(uri.path);
 

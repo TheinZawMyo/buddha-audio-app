@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ApiKeyController;
 use App\Http\Controllers\Admin\AudioCategoryController;
 use App\Http\Controllers\Admin\AudioController;
 use App\Http\Controllers\Admin\AudioTypeController;
@@ -55,6 +56,10 @@ Route::middleware(['auth', 'active'])
         Route::resource('audios', AudioController::class)->except('show');
 
         Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+        Route::resource('api-keys', ApiKeyController::class)
+            ->except('show')
+            ->parameters(['api-keys' => 'apiKey'])
+            ->middleware('can:manage-api-keys');
 
         Route::get('password', [PasswordController::class, 'edit'])->name('password.edit');
     });

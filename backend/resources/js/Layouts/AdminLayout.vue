@@ -16,7 +16,7 @@ const initials = computed(() => {
         .join('');
 });
 
-const navigation = [
+const navigation = computed(() => [
     { label: 'Dashboard', route: 'admin.dashboard', pattern: 'admin.dashboard' },
     { label: 'Audios', route: 'admin.audios.index', pattern: 'admin.audios.*' },
     { label: 'Featured', route: 'admin.featured-audios.index', pattern: 'admin.featured-audios.*' },
@@ -24,7 +24,10 @@ const navigation = [
     { label: 'Categories', route: 'admin.categories.index', pattern: 'admin.categories.*' },
     { label: 'Audio types', route: 'admin.audio-types.index', pattern: 'admin.audio-types.*' },
     { label: 'Audit logs', route: 'admin.audit-logs.index', pattern: 'admin.audit-logs.*' },
-];
+    ...(user.value?.role === 'admin'
+        ? [{ label: 'API keys', route: 'admin.api-keys.index', pattern: 'admin.api-keys.*' }]
+        : []),
+]);
 
 const isActive = (pattern) => route().current(pattern);
 </script>

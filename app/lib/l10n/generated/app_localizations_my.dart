@@ -10,7 +10,7 @@ class AppLocalizationsMy extends AppLocalizations {
   AppLocalizationsMy([String locale = 'my']) : super(locale);
 
   @override
-  String get appTitle => 'ဗုဒ္ဓသံသာ';
+  String get appTitle => 'DhammaWave';
 
   @override
   String get navHome => 'ပင်မ';
